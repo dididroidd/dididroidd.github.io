@@ -44,6 +44,8 @@ Le site contient deux types de contenu :
 - **Mise en ligne déclenchée par un tag git**, et non à chaque push. Je peux pousser des brouillons sur `main` sans qu'ils soient publiés. Le déploiement (GitHub Actions) se lance quand un tag est poussé. *(Décidé par moi.)*
 - **Langue : français.** Une version anglaise viendra peut-être plus tard. La structure ne doit pas l'empêcher, mais on ne la construit pas maintenant. *(Décidé par moi.)*
 - **Générateur : Astro.** *(Choix de Claude, accepté sans objection mais pas discuté en détail.)*
+- **Tout le contenu vit dans le dépôt du site**, y compris les entrées de journal. Les dépôts des projets ne sont pas mis à contribution. *(Décidé par moi.)*
+- **Le journal part de zéro** : il n'y a pas de notes à importer. Une entrée d'exemple pour l'app de recueil suffit. *(Décidé par moi.)*
 
 ## Pages
 
@@ -57,7 +59,9 @@ Le site contient deux types de contenu :
 
 ## Style visuel
 
-Sobre, centré sur la lecture, avec un mode sombre et adapté au mobile. Le rendu Markdown doit être soigné : titres, listes, citations, liens, images, blocs de code avec coloration, tableaux. La direction visuelle précise sera choisie dans Claude Design à partir de plusieurs propositions. La maquette retenue servira de référence.
+Sobre, centré sur la lecture, avec un mode sombre et adapté au mobile. Le rendu Markdown doit être soigné : titres, listes, citations, liens, images, blocs de code avec coloration, tableaux. La direction visuelle retenue est la **direction 3a** du fichier Claude Design `Site perso - Directions.dc.html`. *(Décidé par moi.)* Elle servira de référence une fois le fichier ajouté au dépôt (dans `design/`).
+
+**Ordre de construction** *(choix de Claude)* : d'abord la structure (modèle de contenu, pages, rendu Markdown, déploiement au tag) avec un thème minimal, puis la maquette 3a dans une étape à part. Si la maquette est déjà disponible au démarrage, on l'applique directement.
 
 ## Laissé au constructeur
 
