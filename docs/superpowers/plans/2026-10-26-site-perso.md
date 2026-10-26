@@ -13,7 +13,7 @@
 ## Global Constraints
 
 - Tout le texte visible du site est en français (`<html lang="fr">`). La structure ne doit pas bloquer une future version anglaise, mais on ne construit pas d'i18n.
-- Le dépôt est `dididroidd/ash_site`, donc le site est servi sur `https://dididroidd.github.io/ash_site/`. Dans `astro.config.mjs`, on met `site: "https://dididroidd.github.io"` et `base: "/ash_site"`. **Tous les liens internes passent par `url()`** (Task 2), jamais un `/` en dur.
+- Le dépôt est `dididroidd/dididroidd.github.io`, donc le site est servi à la racine : `https://dididroidd.github.io/`. Dans `astro.config.mjs`, on met `site: "https://dididroidd.github.io"` et aucun `base`. **Tous les liens internes passent quand même par `url()`** (Task 2), pour qu'un changement d'adresse futur ne touche qu'une ligne.
 - Le déploiement se fait **uniquement** quand un tag `v*` est poussé. Un push sur `main` ne publie rien.
 - Un contenu avec `draft: true` n'apparaît nulle part dans `dist/` : ni page, ni lien, ni RSS.
 - Pas de comptes, pas de commentaires, pas de newsletter, pas d'interface d'administration.
@@ -22,7 +22,7 @@
 
 ## Review Focus
 
-- **Liens sous `/ash_site/`** : n'importe quel lien interne écrit `/projets` au lieu de `/ash_site/projets` donne une 404 en production, alors que tout semble fonctionner en local. → test dans Task 3 : aucun `href` interne de `dist/` ne commence par `/` sans `/ash_site/`.
+- **Liens internes cassés** : un lien vers une page qui n'existe pas (faute de frappe, page renommée) donne une 404 en production. → test dans Task 3 : chaque `href` interne de `dist/` pointe vers un fichier existant de `dist/`.
 - **Brouillons qui fuient** : une entrée `draft: true` poussée sur `main` ne doit jamais sortir au prochain tag. → tests dans Task 2 (`isPublished`), Task 3 (pas de page) et Task 4 (absente du RSS).
 - **Entrée de journal rattachée à un projet qui n'existe pas** (faute de frappe dans le slug) : le build doit échouer avec un message clair, pas produire une page orpheline. → `reference("projets")` dans le schéma, et test dans Task 1.
 - **Projet sans aucune entrée de journal** (cas de départ fréquent) : la page projet s'affiche avec un message du type « Pas encore d'entrée », sans planter. → test dans Task 3.
@@ -91,7 +91,7 @@ git add -A && git commit -m "Squelette Astro et collections de contenu"
 - Produces:
   - `isPublished(entry: { data: { draft?: boolean } }): boolean` : renvoie `true` sauf si `draft === true`. Les brouillons restent masqués même avec `astro dev` (pas de cas particulier pour le dev).
   - `byDateDesc<T extends { data: { date: Date } }>(a: T, b: T): number` : fonction de comparaison pour `sort`.
-  - `url(path: string): string` : préfixe avec `import.meta.env.BASE_URL` en évitant les doubles `/`. `url("/projets/")` donne `/ash_site/projets/` et `url("")` donne `/ash_site/`.
+  - `url(path: string, base?: string): string` : préfixe avec `import.meta.env.BASE_URL` en évitant les doubles `/`. Avec `BASE_URL = "/"`, `url("/projets/")` donne `/projets/`. Avec `BASE_URL = "/blog/"`, il donne `/blog/projets/`.
   - `formatDate(d: Date): string` : `Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })`.
 
 - [ ] **Step 1: Écrire les tests qui échouent**
@@ -100,11 +100,12 @@ expect(isPublished({ data: {} })).toBe(true);
 expect(isPublished({ data: { draft: true } })).toBe(false);
 expect([d("2026-01-01"), d("2026-03-01")].sort(byDateDesc).map(x => x.data.date.toISOString().slice(0,10))).toEqual(["2026-03-01","2026-01-01"]);
 expect(formatDate(new Date("2026-10-26"))).toBe("26 octobre 2026");
-expect(url("/projets/")).toBe("/ash_site/projets/");
-expect(url("projets/")).toBe("/ash_site/projets/");
-expect(url("")).toBe("/ash_site/");
+expect(url("/projets/", "/")).toBe("/projets/");
+expect(url("", "/")).toBe("/");
+expect(url("/projets/", "/blog/")).toBe("/blog/projets/");
+expect(url("projets/", "/blog")).toBe("/blog/projets/");
 ```
-(Pour les tests de `url`, injecter `BASE_URL` avec `vi.stubEnv("BASE_URL", "/ash_site/")`, ou bien faire de `url` une fonction de `(path, base = import.meta.env.BASE_URL)`.)
+(`url` a pour signature `(path: string, base = import.meta.env.BASE_URL)`.)
 
 - [ ] **Step 2: Lancer les tests** (`npm test`). Attendu : ÉCHEC, car les modules n'existent pas encore.
 - [ ] **Step 3: Écrire les trois modules.**
@@ -138,7 +139,7 @@ Contenu des pages :
 `tests/pages.test.ts` : lancer `astro build` une fois dans `beforeAll`, puis :
 ```ts
 test("toutes les routes existent", ...) // dist/index.html, projets/index.html, projets/app-recueil/index.html, journal/2026-10-26-demarrage/index.html, revues/index.html, revues/2026-s44/index.html, a-propos/index.html, 404.html
-test("aucun lien interne hors base", ...) // dans chaque .html : aucun href="/..." qui ne commence pas par "/ash_site/"
+test("aucun lien interne cassé", ...) // dans chaque .html : chaque href="/..." (hors rss.xml et ancres) correspond à un fichier dans dist/ (chemin, ou chemin + index.html)
 test("un brouillon ne génère aucune page", ...) // créer un fichier journal temporaire avec draft: true, rebuild, vérifier que sa route et son titre sont absents de tout dist/, puis supprimer le fichier
 test("projet sans journal", ...) // créer un projet temporaire sans entrée, rebuild, vérifier que sa page contient "Pas encore d'entrée."
 test("accueil : projets avant revues", ...) // dans index.html, l'index de "Projets" est inférieur à celui de "Dernières revues tech"
@@ -149,7 +150,7 @@ Les fichiers temporaires sont supprimés dans un `finally`. Les tests de ce fich
 - [ ] **Step 2: Lancer les tests** (`npm test`). Attendu : ÉCHEC, car les pages n'existent pas encore.
 - [ ] **Step 3: Écrire les layouts, les pages et le CSS.**
 - [ ] **Step 4: Relancer les tests** (`npm test && npm run check`). Attendu : tout passe, et `astro check` ne signale aucune erreur.
-- [ ] **Step 5: Vérification visuelle.** Lancer `npm run preview`, puis ouvrir `/ash_site/` en largeur 375px et en mode sombre. Attendu : pas de défilement horizontal de la page, et le code reste lisible dans les deux thèmes.
+- [ ] **Step 5: Vérification visuelle.** Lancer `npm run preview`, puis ouvrir `/` en largeur 375px et en mode sombre. Attendu : pas de défilement horizontal de la page, et le code reste lisible dans les deux thèmes.
 - [ ] **Step 6: Commit** : `git commit -m "Pages et thème minimal"`
 
 ---
@@ -165,7 +166,7 @@ Les fichiers temporaires sont supprimés dans un `finally`. Les tests de ce fich
 - Consumes: `isPublished`, `byDateDesc`, `url`.
 - Produces: `/rss.xml`, un flux unique qui mélange revues et entrées de journal publiées, trié par date décroissante. Le titre de chaque item est préfixé par `[Revue]` ou `[Journal · <titre du projet>]`.
 
-- [ ] **Step 1: Écrire le test qui échoue.** Après le build, `dist/rss.xml` existe, contient `https://dididroidd.github.io/ash_site/revues/2026-s44/`, et ne contient pas le titre d'un brouillon temporaire (même technique que dans Task 3).
+- [ ] **Step 1: Écrire le test qui échoue.** Après le build, `dist/rss.xml` existe, contient `https://dididroidd.github.io/revues/2026-s44/`, et ne contient pas le titre d'un brouillon temporaire (même technique que dans Task 3).
 - [ ] **Step 2: Lancer le test** (`npm test`). Attendu : ÉCHEC.
 - [ ] **Step 3: Implémenter le flux avec `@astrojs/rss`** (`npm i @astrojs/rss`).
 - [ ] **Step 4: Relancer le test** (`npm test`). Attendu : tout passe.
@@ -186,7 +187,7 @@ Les fichiers temporaires sont supprimés dans un `finally`. Les tests de ce fich
 - [ ] **Step 2: Vérifier les déclencheurs.** Lancer `grep -n "branches" .github/workflows/deploy.yml`. Attendu : aucun résultat.
 - [ ] **Step 3: Écrire le README en français.** Il explique : écrire une entrée de journal (copier un fichier d'exemple, changer `projet`), écrire une revue, garder un brouillon (`draft: true`), prévisualiser (`npm run dev`), et publier (`git tag v2026.10.26 && git push origin v2026.10.26`, avec le format de tag `vAAAA.MM.JJ`, suivi de `.2` s'il y a plusieurs publications le même jour). Il rappelle aussi la configuration unique à faire : *Settings → Pages → Source : GitHub Actions*.
 - [ ] **Step 4: Commit** : `git commit -m "Déploiement GitHub Pages au tag et README"`
-- [ ] **Step 5: Premier déploiement, à faire avec l'auteur.** Ne pas pousser de tag sans son accord. Il doit d'abord activer Pages (Source : GitHub Actions), puis pousser `main` et le tag. Attendu : le workflow est vert et `https://dididroidd.github.io/ash_site/` s'affiche.
+- [ ] **Step 5: Premier déploiement, à faire avec l'auteur.** Ne pas pousser de tag sans son accord. Il doit d'abord activer Pages (Source : GitHub Actions), puis pousser `main` et le tag. Attendu : le workflow est vert et `https://dididroidd.github.io/` s'affiche.
 
 ---
 
