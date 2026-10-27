@@ -80,6 +80,24 @@ describe('pages', () => {
     );
   }, 120_000);
 
+  test("le journal d'un projet en brouillon ne fuit pas", () => {
+    buildWith(
+      {
+        'src/content/projets/__test-cache.md':
+          '---\ntitre: Projet caché\nresume: x\nstatut: en-cours\ntechnos: []\ndraft: true\n---\nx\n',
+        'src/content/journal/__test-pub.md':
+          '---\ntitre: Entrée publiée\ndate: 2026-10-27\nprojet: __test-cache\n---\nx\n',
+      },
+      () => {
+        expect(exists('journal/__test-pub/index.html')).toBe(false);
+        const tout = allText();
+        expect(tout).not.toContain('Projet caché');
+        expect(tout).not.toContain('Entrée publiée');
+        expect(tout).not.toContain('/projets/__test-cache/');
+      },
+    );
+  }, 120_000);
+
   test('projet sans journal', () => {
     buildWith(
       {

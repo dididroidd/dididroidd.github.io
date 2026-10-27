@@ -79,7 +79,12 @@ Format des tags : `vAAAA.MM.JJ`, avec `.2`, `.3`… s'il y a plusieurs publicati
 
 ### Configuration unique
 
-Sur GitHub : *Settings → Pages → Build and deployment → Source : **GitHub Actions***.
+Sur GitHub :
+
+1. *Settings → Pages → Build and deployment → Source : **GitHub Actions***.
+2. *Settings → Environments → github-pages → Deployment branches and tags* : ajouter une règle
+   de **tag** `v*`. Sans elle, GitHub n'autorise que la branche `main` et refuse le déploiement
+   lancé par un tag (« Tag … is not allowed to deploy to github-pages »).
 
 ## Vérifier
 

@@ -1,13 +1,14 @@
 import rss from '@astrojs/rss';
 import type { APIContext } from 'astro';
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 import { byDateDesc, isPublished } from '../lib/contenu';
+import { journalPublie } from '../lib/journal';
 import { url } from '../lib/url';
 import { DESCRIPTION_SITE, NOM_SITE } from '../lib/site';
 
 export async function GET(context: APIContext) {
   const revues = await getCollection('revues', isPublished);
-  const journal = await getCollection('journal', isPublished);
+  const journal = await journalPublie();
 
   const items = [
     ...revues.map((r) => ({
@@ -16,17 +17,12 @@ export async function GET(context: APIContext) {
       link: url(`/revues/${r.id}/`),
       description: r.data.resume,
     })),
-    ...(await Promise.all(
-      journal.map(async (e) => {
-        const projet = await getEntry(e.data.projet);
-        return {
-          data: e.data,
-          titre: `[Journal · ${projet?.data.titre ?? e.data.projet.id}] ${e.data.titre}`,
-          link: url(`/journal/${e.id}/`),
-          description: undefined,
-        };
-      }),
-    )),
+    ...journal.map(({ entree, projet }) => ({
+      data: entree.data,
+      titre: `[Journal · ${projet.data.titre}] ${entree.data.titre}`,
+      link: url(`/journal/${entree.id}/`),
+      description: undefined,
+    })),
   ].sort(byDateDesc);
 
   return rss({
