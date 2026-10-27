@@ -1,37 +1,95 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import CarteProjet from '../components/CarteProjet.astro';
-import ListeArticles from '../components/ListeArticles.astro';
 import { byDateDesc, isPublished } from '../lib/contenu';
+import { formatDateCourte } from '../lib/date';
+import { journalPublie } from '../lib/journal';
+import { TYPES_JOURNAL, idCourt } from '../lib/journal-format';
+import { projetsPublies } from '../lib/projets';
+import { ACCROCHE, INTRO } from '../lib/site';
+import { STATUTS } from '../lib/statut';
 import { url } from '../lib/url';
 
-const projets = (await getCollection('projets', isPublished)).sort((a, b) => a.data.ordre - b.data.ordre);
-const revues = (await getCollection('revues', isPublished)).sort(byDateDesc).slice(0, 3);
+const projets = await projetsPublies();
+const journal = (await journalPublie()).sort((a, b) => byDateDesc(a.entree, b.entree));
+const revues = (await getCollection('revues', isPublished)).sort(byDateDesc).slice(0, 2);
+
+const parProjet = (id: string) => journal.filter((j) => j.projet.id === id).map((j) => j.entree);
 ---
 
-<Base>
-  <section class="intro">
-    <h1>Salut, moi c'est Didi.</h1>
-    <p>
-      Développeur. Ici je montre les projets sur lesquels je travaille, comment ils avancent, et ce que je
-      retiens de l'actu tech. (Texte provisoire, à remplacer.)
-    </p>
-  </section>
+<Base section="accueil">
+  <h1 class="accroche" set:html={ACCROCHE} />
+  <p class="intro">{INTRO}</p>
 
-  <section>
-    <h2>Projets</h2>
-    <div class="grille-projets">
-      {projets.map((p) => <CarteProjet projet={p} />)}
+  <div class="surtitre statut--en-cours" style="margin-bottom:6px">Projets</div>
+  <h2 class="titre-section">Ce que je fabrique</h2>
+  <ul class="liste-projets">
+    {
+      projets.map((p) => {
+        const entrees = parProjet(p.id);
+        const maj = entrees[0]?.data.date ?? p.data.depuis;
+        const s = STATUTS[p.data.statut];
+        return (
+          <li>
+            <div class="ligne">
+              <a class="nom-projet" href={url(`/projets/${p.id}/`)}>
+                {p.data.titre}
+              </a>
+              <span class:list={['statut', `statut--${p.data.statut}`]}>
+                {s.symbole} {s.label}
+              </span>
+              <span class="discret">
+                · {entrees.length} {entrees.length > 1 ? 'entrées' : 'entrée'} · {formatDateCourte(maj)}
+              </span>
+            </div>
+            <div class="resume">{p.data.resume}</div>
+          </li>
+        );
+      })
+    }
+  </ul>
+
+  {
+    journal.length > 0 && (
+      <>
+        <div class="surtitre">Dernières entrées du journal</div>
+        <div class="recents">
+          {journal.slice(0, 3).map(({ entree }) => {
+            const t = TYPES_JOURNAL[entree.data.type];
+            return (
+              <div class="recent">
+                <span class:list={['symbole', `t-${entree.data.type}`]}>{t.symbole}</span>
+                <span class="id-court">{idCourt(entree.id)}</span>
+                <span>
+                  <a href={url(`/journal/${entree.id}/`)}>{entree.data.titre}</a>{' '}
+                  <span class:list={['discret', `t-${entree.data.type}`]}>#{t.tag}</span>
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </>
+    )
+  }
+
+  <section class="encart-revue">
+    <div class="tete">
+      <span>La revue tech, le dimanche</span>
+      <a href={url('/revues/')}>toutes →</a>
     </div>
-  </section>
-
-  <section class="secondaire">
-    <h2>Dernières revues tech</h2>
-    <ListeArticles
-      articles={revues.map((r) => ({ href: url(`/revues/${r.id}/`), titre: r.data.titre, date: r.data.date }))}
-      vide="Pas encore de revue."
-    />
-    <p><a href={url('/revues/')}>Toutes les revues →</a></p>
+    {
+      revues.length === 0 ? (
+        <p class="vide">Pas encore de revue.</p>
+      ) : (
+        revues.map((r) => (
+          <div class="item">
+            <span class="statut" style="color:var(--bleu);padding-top:3px">
+              N°{r.data.numero}
+            </span>
+            <a href={url(`/revues/${r.id}/`)}>{r.data.titre}</a>
+          </div>
+        ))
+      )
+    }
   </section>
 </Base>

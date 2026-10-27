@@ -1,10 +1,25 @@
 ---
 import Base from '../layouts/Base.astro';
+import { GITHUB } from '../lib/site';
+import { url } from '../lib/url';
 ---
 
-<Base titre="À propos">
+<Base titre="À propos" section="apropos">
+  <h1 class="titre-page" style="margin-bottom:22px">À propos</h1>
   <div class="prose">
-    <h1>À propos</h1>
     <p>Qui je suis, ce que je fais, sur quoi je travaille en ce moment. (Texte provisoire, à remplacer.)</p>
+    <p>
+      J'ai un poste qui me plaît ; ce site n'est pas un CV. Je raconte ici ce que je fabrique, et le chemin dans les
+      journaux de bord — y compris les idées que j'abandonne.
+    </p>
   </div>
+  <div class="surtitre" style="margin:36px 0 10px">Ce que j'utilise</div>
+  <div class="prose">
+    <ul>
+      <li>Ce site : Astro, Markdown, GitHub Pages</li>
+    </ul>
+  </div>
+  <div class="surtitre" style="margin:36px 0 10px">Me trouver</div>
+  <div class="contact"><span>GitHub :</span> <a href={GITHUB}>{GITHUB.replace('https://', '')}</a></div>
+  <div class="contact"><span>RSS :</span> <a href={url('/rss.xml')}>/rss.xml</a></div>
 </Base>

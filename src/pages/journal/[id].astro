@@ -1,23 +1,62 @@
 ---
 import { render, type CollectionEntry } from 'astro:content';
-import Article from '../../layouts/Article.astro';
+import Base from '../../layouts/Base.astro';
+import { byDateDesc } from '../../lib/contenu';
+import { formatDateCourte } from '../../lib/date';
 import { journalPublie } from '../../lib/journal';
+import { TYPES_JOURNAL, idCourt, tempsLecture } from '../../lib/journal-format';
 import { url } from '../../lib/url';
 
 export async function getStaticPaths() {
-  return (await journalPublie()).map(({ entree, projet }) => ({ params: { id: entree.id }, props: { entree, projet } }));
+  const journal = await journalPublie();
+  return journal.map(({ entree, projet }) => {
+    // L'entrée précédente du même projet (la plus récente parmi les plus anciennes).
+    const precedente = journal
+      .filter((j) => j.projet.id === projet.id && j.entree.data.date < entree.data.date)
+      .map((j) => j.entree)
+      .sort(byDateDesc)[0];
+    return { params: { id: entree.id }, props: { entree, projet, precedente } };
+  });
 }
 
 interface Props {
   entree: CollectionEntry<'journal'>;
   projet: CollectionEntry<'projets'>;
+  precedente?: CollectionEntry<'journal'>;
 }
 
-const { entree, projet } = Astro.props;
+const { entree, projet, precedente } = Astro.props;
+const { titre, date, type, tags, resume } = entree.data;
+const t = TYPES_JOURNAL[type];
 const { Content } = await render(entree);
 ---
 
-<Article titre={entree.data.titre} date={entree.data.date} type="journal" projet={projet.data.titre}>
-  <Content />
-  <p slot="apres" class="retour"><a href={url(`/projets/${projet.id}/`)}>← {projet.data.titre}</a></p>
-</Article>
+<Base titre={titre} description={resume} section="projets">
+  <div class="surtitre entree-meta">
+    <a href={url(`/projets/${projet.id}/`)}>{projet.data.titre} / journal</a>
+    <span class="mono id-court">{idCourt(entree.id)}</span>
+    <time datetime={date.toISOString().slice(0, 10)}>{formatDateCourte(date)}</time>
+    <span>{tempsLecture(entree.body ?? '')} min</span>
+  </div>
+  <h1 class="titre-article">{titre}</h1>
+  <div class="etiquettes">
+    <span class={`t-${type}`}><b>{t.symbole}</b> #{t.tag}</span>
+    {tags.map((tag) => <span>#{tag}</span>)}
+  </div>
+  <div class="prose">
+    <Content />
+  </div>
+  <div class="suite">
+    {
+      precedente ? (
+        <a class="precedente" href={url(`/journal/${precedente.id}/`)}>
+          <span class="mono">{idCourt(precedente.id)}</span> ←{' '}
+          {precedente.data.type === 'abandon' ? <s>{precedente.data.titre}</s> : precedente.data.titre}
+        </a>
+      ) : (
+        <span />
+      )
+    }
+    <a href={url(`/projets/${projet.id}/`)}>tout le journal</a>
+  </div>
+</Base>

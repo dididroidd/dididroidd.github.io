@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,600;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;500&display=swap" rel="stylesheet"><style>body{margin:0}a{color:oklch(0.52 0.2 350)}a:hover{color:oklch(0.42 0.2 350)}</style></helmet>
+<div style="width:1280px;background:{{ t.bg }};color:{{ t.ink }};font-family:'Atkinson Hyperlegible Next',system-ui,sans-serif">
+<div style="display:flex;gap:4px;flex-wrap:wrap;padding:10px 14px;background:{{ t.bar }};border-bottom:1px solid {{ t.rule }};font:500 11px/1 'Atkinson Hyperlegible Mono',monospace">
+<span style="padding:6px 8px;color:{{ t.faint }}">maquette · {{ t.name }} · pages →</span>
+<sc-for list="{{ picker }}" as="pg" hint-placeholder-count="7"><button onClick="{{ pg.go }}" style="border:0;cursor:pointer;padding:6px 10px;border-radius:4px;font:inherit;background:{{ pg.bg }};color:{{ pg.fg }}">{{ pg.label }}</button></sc-for>
+</div>
+<div style="min-height:1500px;padding:56px 0 64px">
+<div style="max-width:720px;margin:0 auto;padding:0 24px">
+<header style="display:flex;gap:20px;align-items:center;margin-bottom:20px">
+<div onClick="{{ goHome }}" style="cursor:pointer;width:64px;height:64px;border-radius:50%;flex:none;background:repeating-linear-gradient(135deg,{{ t.ph1 }} 0 5px,{{ t.ph2 }} 5px 10px);display:flex;align-items:center;justify-content:center;font:400 9px 'Atkinson Hyperlegible Mono',monospace;color:{{ t.faint }}">visage</div>
+<div style="display:flex;flex-direction:column;gap:4px"><div onClick="{{ goHome }}" style="cursor:pointer;font:400 30px/1 'Instrument Serif',serif">Alex Moreau</div><div style="font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:{{ t.faint }}">Développeur · Lyon · carnet de fabrication</div></div>
+<button onClick="{{ toggleTheme }}" style="margin-left:auto;cursor:pointer;border:1px solid {{ t.rule }};background:transparent;color:{{ t.muted }};border-radius:999px;padding:6px 12px;font:400 13px 'Atkinson Hyperlegible Next',sans-serif">{{ t.toggle }}</button>
+</header>
+<nav style="display:flex;gap:20px;font-size:16px;padding-bottom:16px;border-bottom:2px dotted {{ t.rule }}">
+<span onClick="{{ goHome }}" style="cursor:pointer;color:{{ t.ink }};text-decoration:{{ nv.home }};text-underline-offset:5px;text-decoration-thickness:2px">accueil</span>
+<span onClick="{{ goProjets }}" style="cursor:pointer;color:{{ t.pink }};text-decoration:{{ nv.projets }};text-underline-offset:5px;text-decoration-thickness:2px">projets</span>
+<span onClick="{{ goRevues }}" style="cursor:pointer;color:{{ t.teal }};text-decoration:{{ nv.revue }};text-underline-offset:5px;text-decoration-thickness:2px">revue tech</span>
+<span onClick="{{ goApropos }}" style="cursor:pointer;color:{{ t.ink }};text-decoration:{{ nv.apropos }};text-underline-offset:5px;text-decoration-thickness:2px">à propos</span>
+<span style="margin-left:auto;color:{{ t.faint }}">github · rss</span>
+</nav>
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<main style="padding-top:40px">
+<h1 style="font:400 52px/1.05 'Instrument Serif',serif;letter-spacing:-.01em;margin:0 0 18px;text-wrap:pretty">Je fabrique des petits outils, et je note <i>tout</i> ce qui se passe en chemin.</h1>
+<p style="font-size:19px;line-height:1.65;margin:0 0 44px;color:{{ t.muted }};text-wrap:pretty">{{ site.intro }}</p>
+<div style="font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:{{ t.pink }};margin-bottom:6px">Projets</div>
+<h2 style="font:400 34px/1.1 'Instrument Serif',serif;margin:0 0 16px">Ce que je fabrique</h2>
+<ul style="list-style:none;padding:0;margin:0 0 44px;display:flex;flex-direction:column;gap:18px">
+<sc-for list="{{ projects }}" as="p" hint-placeholder-count="4">
+<li onClick="{{ p.go }}" style="cursor:pointer"><div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap"><span style="font-size:19px;font-weight:600;color:{{ t.pink }};text-decoration:underline;text-underline-offset:3px">{{ p.name }}</span><span style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:{{ p.sc }}">{{ p.glyph }} {{ p.status }}</span><span style="font-size:14px;color:{{ t.faint }}">· {{ p.count }} entrées · {{ p.updated }}</span></div><div style="font-size:17px;line-height:1.5;color:{{ t.muted }};margin-top:3px">{{ p.pitch }}</div></li>
+</sc-for>
+</ul>
+<div style="font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:{{ t.faint }};margin-bottom:10px">Dernières entrées du journal</div>
+<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:44px">
+<sc-for list="{{ recent }}" as="e" hint-placeholder-count="3"><div onClick="{{ e.go }}" style="cursor:pointer;display:grid;grid-template-columns:22px 70px minmax(0,1fr);gap:10px;align-items:baseline;font-size:17px"><span style="font:500 16px 'Atkinson Hyperlegible Mono',monospace;color:{{ e.color }}">{{ e.sym }}</span><span style="font:400 13px 'Atkinson Hyperlegible Mono',monospace;color:{{ t.faint }}">{{ e.id }}</span><span><span style="text-decoration:underline;text-decoration-color:{{ t.rule }};text-underline-offset:3px">{{ e.title }}</span> <span style="font-size:14px;color:{{ e.color }}">#{{ e.tag }}</span></span></div></sc-for>
+</div>
+<div style="padding:18px 20px;border-radius:12px;background:{{ t.tealBg }};display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 24px 'Instrument Serif',serif;color:{{ t.teal }}">La revue tech, le dimanche</span><span onClick="{{ goRevues }}" style="cursor:pointer;font-size:14px;color:{{ t.teal }};text-decoration:underline">toutes →</span></div>
+<sc-for list="{{ latestRevues }}" as="r" hint-placeholder-count="2"><div onClick="{{ r.go }}" style="cursor:pointer;font-size:16px;display:flex;gap:12px"><span style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:{{ t.teal }};padding-top:3px">N°{{ r.n }}</span>{{ r.title }}</div></sc-for>
+</div>
+</main>
+</sc-if>
+
+<sc-if value="{{ isProjets }}" hint-placeholder-val="{{ false }}">
+<main style="padding-top:40px">
+<h1 style="font:400 56px/1 'Instrument Serif',serif;margin:0 0 12px">Projets</h1>
+<p style="font-size:19px;line-height:1.6;margin:0 0 20px;color:{{ t.muted }}">Du plus vivant au plus fini. Chacun a son journal de bord.</p>
+<sc-for list="{{ groups }}" as="g" hint-placeholder-count="3">
+<div style="font-size:12px;letter-spacing:.09em;text-transform:uppercase;margin:30px 0 8px;padding-bottom:8px;border-bottom:1px solid {{ t.rule }};color:{{ g.color }}">{{ g.glyph }} {{ g.label }}</div>
+<sc-for list="{{ g.items }}" as="p" hint-placeholder-count="2">
+<div onClick="{{ p.go }}" style="cursor:pointer;display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;padding:12px 0">
+<div style="height:96px;border-radius:10px;background:repeating-linear-gradient(135deg,{{ t.ph1 }} 0 5px,{{ t.ph2 }} 5px 10px);display:flex;align-items:flex-end;padding:8px;box-sizing:border-box;font:400 10px 'Atkinson Hyperlegible Mono',monospace;color:{{ t.faint }}">capture</div>
+<div><div style="font:400 28px/1.1 'Instrument Serif',serif;color:{{ t.pink }};text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px">{{ p.name }}</div><div style="font-size:17px;line-height:1.5;color:{{ t.muted }};margin:6px 0">{{ p.pitch }}</div><div style="font-size:14px;color:{{ t.faint }}">{{ p.techStr }} · depuis {{ p.since }}</div></div>
+</div>
+</sc-for>
+</sc-for>
+</main>
+</sc-if>
+
+<sc-if value="{{ isProjet }}" hint-placeholder-val="{{ false }}">
+<main style="padding-top:36px">
+<div style="font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:{{ t.faint }};margin-bottom:10px"><span onClick="{{ goProjets }}" style="cursor:pointer;color:{{ t.pink }}">Projets</span> / 01</div>
+<h1 style="font:400 88px/.95 'Instrument Serif',serif;letter-spacing:-.02em;margin:0 0 18px">{{ project.name }}</h1>
+<p style="font-size:20px;line-height:1.6;margin:0 0 20px;text-wrap:pretty">{{ project.pitch }}</p>
+<div style="display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:8px 36px;margin-bottom:26px;padding:14px 0;border-top:1px solid {{ t.rule }};border-bottom:1px solid {{ t.rule }}">
+<div><div style="font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:{{ t.faint }};margin-bottom:3px">Statut</div><span style="color:{{ t.pink }};font-weight:600">● {{ project.status }}</span></div>
+<div><div style="font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:{{ t.faint }};margin-bottom:3px">Depuis</div>{{ project.since }}</div>
+<div><div style="font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:{{ t.faint }};margin-bottom:3px">Liens</div><div style="display:flex;gap:14px"><sc-for list="{{ project.links }}" as="l" hint-placeholder-count="2"><span style="color:{{ t.pink }};text-decoration:underline;text-underline-offset:3px">{{ l.label }} ↗</span></sc-for></div></div>
+<div style="grid-column:1 / -1;display:flex;gap:14px;flex-wrap:wrap;font-size:14px"><sc-for list="{{ project.tech }}" as="tg" hint-placeholder-count="4"><span style="color:{{ t.muted }}">#{{ tg }}</span></sc-for></div>
+</div>
+<div style="height:300px;border-radius:14px;background:repeating-linear-gradient(135deg,{{ t.ph1 }} 0 5px,{{ t.ph2 }} 5px 10px);display:flex;align-items:flex-end;padding:12px;box-sizing:border-box;font:400 11px 'Atkinson Hyperlegible Mono',monospace;color:{{ t.faint }};margin-bottom:30px">capture — Recueil sur ordinateur et mobile</div>
+<h2 style="font:400 32px 'Instrument Serif',serif;margin:0 0 10px">Pourquoi</h2>
+<p style="font-size:18px;line-height:1.65;margin:0 0 48px;text-wrap:pretty">{{ project.why }}</p>
+<div style="display:flex;justify-content:space-between;align-items:baseline;border-top:2px dotted {{ t.rule }};padding-top:26px;margin-bottom:8px"><h2 style="font:400 40px 'Instrument Serif',serif;margin:0">Journal de bord</h2><span style="font:400 13px 'Atkinson Hyperlegible Mono',monospace;color:{{ t.faint }}">12 commits</span></div>
+<div style="display:flex;gap:18px;flex-wrap:wrap;font-size:14px;margin-bottom:18px"><sc-for list="{{ legend }}" as="lg" hint-placeholder-count="4"><span style="color:{{ lg.color }}"><b style="font-family:'Atkinson Hyperlegible Mono',monospace">{{ lg.sym }}</b> #{{ lg.tag }}</span></sc-for></div>
+<div style="font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:{{ t.faint }};margin:10px 0 6px">Octobre 2026</div>
+<sc-for list="{{ entries }}" as="e" hint-placeholder-count="5">
+<div onClick="{{ e.go }}" style="cursor:pointer;display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px" style-hover="background:{{ t.soft }}">
+<div style="display:flex;flex-direction:column;align-items:center"><span style="font:700 17px/26px 'Atkinson Hyperlegible Mono',monospace;color:{{ e.color }}">{{ e.sym }}</span><span style="flex:1;border-left:1px solid {{ t.rule }}"></span></div>
+<div style="padding:0 0 24px"><div style="display:flex;gap:12px;font:400 13px/26px 'Atkinson Hyperlegible Mono',monospace"><span style="color:{{ t.amber }}">{{ e.id }}</span><span style="color:{{ t.faint }}">{{ e.date }}</span><span style="font-family:'Atkinson Hyperlegible Next',sans-serif;font-size:14px;color:{{ e.color }}">#{{ e.tag }}</span></div><div style="font-size:19px;font-weight:600;margin:2px 0 4px;text-decoration:{{ e.deco }};text-decoration-color:{{ t.faint }}">{{ e.title }}</div><div style="font-size:16px;line-height:1.55;color:{{ t.muted }}">{{ e.summary }}</div></div>
+</div>
+</sc-for>
+</main>
+</sc-if>
+
+<sc-if value="{{ isEntree }}" hint-placeholder-val="{{ false }}">
+<main style="padding-top:36px">
+<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:baseline;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:{{ t.faint }};margin-bottom:14px"><span onClick="{{ goProjet }}" style="cursor:pointer;color:{{ t.pink }}">Recueil / journal</span><span style="font:400 13px 'Atkinson Hyperlegible Mono',monospace;letter-spacing:0;text-transform:none;color:{{ t.amber }}">a3f9c1</span><span>24 oct. 2026</span><span>4 min</span></div>
+<h1 style="font:400 56px/1.02 'Instrument Serif',serif;letter-spacing:-.01em;margin:0 0 14px;text-wrap:pretty">La recherche plein texte fonctionne hors ligne</h1>
+<div style="display:flex;gap:14px;font-size:15px;margin-bottom:32px"><span style="color:{{ t.pink }}"><b style="font-family:'Atkinson Hyperlegible Mono',monospace">+</b> #avancée</span><span style="color:{{ t.muted }}">#sqlite</span><span style="color:{{ t.muted }}">#wasm</span></div>
+<sc-for list="{{ blocks }}" as="b" hint-placeholder-count="8">
+<sc-if value="{{ b.isP }}" hint-placeholder-val="{{ true }}"><p style="font-size:19px;line-height:1.7;margin:0 0 20px;text-wrap:pretty">{{ b.text }}</p></sc-if>
+<sc-if value="{{ b.isH2 }}" hint-placeholder-val="{{ false }}"><h2 style="font:400 34px 'Instrument Serif',serif;margin:40px 0 12px">{{ b.text }}</h2></sc-if>
+<sc-if value="{{ b.isUl }}" hint-placeholder-val="{{ false }}"><ul style="margin:0 0 22px;padding-left:24px"><sc-for list="{{ b.items }}" as="it" hint-placeholder-count="3"><li style="font-size:19px;line-height:1.6;margin-bottom:6px;padding-left:4px">{{ it }}</li></sc-for></ul></sc-if>
+<sc-if value="{{ b.isCode }}" hint-placeholder-val="{{ false }}"><div style="margin:0 0 24px;border-radius:12px;background:{{ t.code }};overflow:hidden"><div style="display:flex;justify-content:space-between;padding:8px 16px;font:400 12px 'Atkinson Hyperlegible Mono',monospace;color:{{ t.faint }};border-bottom:1px solid {{ t.rule }}"><span>{{ b.file }}</span><span>copier</span></div><pre style="margin:0;padding:14px 16px;font:400 14.5px/1.7 'Atkinson Hyperlegible Mono',monospace;overflow-x:auto"><sc-for list="{{ b.lines }}" as="line" hint-placeholder-count="6"><div style="white-space:pre"><sc-for list="{{ line }}" as="tk" hint-placeholder-count="2"><span style="color:{{ tk.color }}">{{ tk.v }}</span></sc-for></div></sc-for></pre></div></sc-if>
+<sc-if value="{{ b.isQuote }}" hint-placeholder-val="{{ false }}"><blockquote style="margin:32px 0;padding:4px 0 4px 22px;border-left:3px solid {{ t.pink }}"><p style="font:italic 400 32px/1.15 'Instrument Serif',serif;margin:0 0 8px">{{ b.text }}</p><span style="font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:{{ t.faint }}">{{ b.cite }}</span></blockquote></sc-if>
+<sc-if value="{{ b.isTable }}" hint-placeholder-val="{{ false }}"><table style="width:100%;border-collapse:collapse;margin:4px 0 28px;font-size:16px"><thead><tr><sc-for list="{{ b.head }}" as="h" hint-placeholder-count="3"><th style="text-align:left;padding:8px 12px 8px 0;border-bottom:2px solid {{ t.ink }};font-size:11px;letter-spacing:.09em;text-transform:uppercase;font-weight:600">{{ h }}</th></sc-for></tr></thead><tbody><sc-for list="{{ b.rows }}" as="row" hint-placeholder-count="3"><tr><sc-for list="{{ row }}" as="cell" hint-placeholder-count="3"><td style="padding:9px 12px 9px 0;border-bottom:1px solid {{ t.rule }}">{{ cell }}</td></sc-for></tr></sc-for></tbody></table></sc-if>
+<sc-if value="{{ b.isImg }}" hint-placeholder-val="{{ false }}"><figure style="margin:0 0 28px"><div style="height:260px;border-radius:12px;background:repeating-linear-gradient(135deg,{{ t.ph1 }} 0 5px,{{ t.ph2 }} 5px 10px)"></div><figcaption style="font-size:14px;color:{{ t.faint }};margin-top:8px;text-align:center">{{ b.label }}</figcaption></figure></sc-if>
+</sc-for>
+<div style="border-top:2px dotted {{ t.rule }};margin-top:36px;padding-top:16px;font-size:16px;display:flex;justify-content:space-between"><span style="color:{{ t.faint }}"><span style="font-family:'Atkinson Hyperlegible Mono',monospace">7be210</span> ← <s>La synchronisation en temps réel</s></span><span onClick="{{ goProjet }}" style="cursor:pointer;color:{{ t.pink }};text-decoration:underline">tout le journal</span></div>
+</main>
+</sc-if>
+
+<sc-if value="{{ isRevues }}" hint-placeholder-val="{{ false }}">
+<main style="padding-top:40px">
+<h1 style="font:400 56px/1 'Instrument Serif',serif;margin:0 0 12px">La <i style="color:{{ t.teal }}">revue</i> tech</h1>
+<p style="font-size:19px;line-height:1.6;margin:0 0 6px;color:{{ t.muted }}">Chaque dimanche, ce qui m'a marqué dans la semaine tech, avec mon avis. Pour les amis et les devs curieux.</p>
+<p style="font-size:15px;margin:0 0 20px;color:{{ t.teal }};text-decoration:underline">S'abonner par RSS</p>
+<div style="font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:{{ t.faint }};margin:24px 0 8px;padding-bottom:8px;border-bottom:1px solid {{ t.rule }}">2026</div>
+<sc-for list="{{ revues }}" as="r" hint-placeholder-count="4"><div onClick="{{ r.go }}" style="cursor:pointer;display:grid;grid-template-columns:64px minmax(0,1fr);gap:12px;padding:10px 0;align-items:baseline"><span style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:{{ t.teal }}">N°{{ r.n }}</span><div><span style="font-size:18px;color:{{ t.teal }};text-decoration:underline;text-underline-offset:3px">{{ r.title }}</span><div style="font-size:14px;color:{{ t.faint }};margin-top:2px">{{ r.dates }} · {{ r.count }} sujets</div></div></div></sc-for>
+</main>
+</sc-if>
+
+<sc-if value="{{ isRevue }}" hint-placeholder-val="{{ false }}">
+<main style="padding-top:32px">
+<div style="text-align:center;padding:10px 0 18px;border-bottom:3px double {{ t.ink }}">
+<div onClick="{{ goRevues }}" style="cursor:pointer;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:{{ t.faint }};margin-bottom:8px">← Lettre hebdomadaire d'Alex Moreau</div>
+<div style="font:400 96px/.9 'Instrument Serif',serif;letter-spacing:-.02em">La <i style="color:{{ t.teal }}">Revue</i></div>
+<div style="display:flex;justify-content:space-between;font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-top:14px;color:{{ t.muted }}"><span>N°{{ revue.n }}</span><span>Lyon, {{ revue.date }}</span><span>3 sujets</span></div>
+</div>
+<h1 style="font:400 44px/1.05 'Instrument Serif',serif;text-align:center;margin:32px 0 28px;text-wrap:balance">{{ revue.title }}</h1>
+<p style="font-size:19px;margin:0 0 10px">{{ revue.hello }}</p>
+<p style="font-size:19px;line-height:1.7;margin:0 0 30px">{{ revue.intro }}</p>
+<sc-for list="{{ revue.items }}" as="it" hint-placeholder-count="3">
+<section style="margin:0 0 30px;padding-top:16px;border-top:1px solid {{ t.rule }}"><div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:{{ t.teal }};margin-bottom:6px">{{ it.n }} · {{ it.source }}</div><h2 style="font:400 30px/1.1 'Instrument Serif',serif;margin:0 0 8px">{{ it.title }}</h2><p style="font-size:17px;line-height:1.65;margin:0 0 10px;color:{{ t.muted }}">{{ it.resume }}</p><p style="font-size:17px;line-height:1.65;margin:0;padding:12px 16px;border-radius:10px;background:{{ t.tealBg }}"><b style="color:{{ t.teal }}">Mon avis :</b> {{ it.avis }}</p></section>
+</sc-for>
+<div style="border-top:3px double {{ t.ink }};padding-top:14px"><div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:{{ t.faint }};margin-bottom:8px">En bref</div>
+<ul style="margin:0;padding-left:22px"><sc-for list="{{ revue.bref }}" as="x" hint-placeholder-count="3"><li style="font-size:17px;line-height:1.6;margin-bottom:4px">{{ x }}</li></sc-for></ul>
+<p style="font:italic 400 28px 'Instrument Serif',serif;margin:30px 0 0">{{ revue.sign }}</p></div>
+</main>
+</sc-if>
+
+<sc-if value="{{ isApropos }}" hint-placeholder-val="{{ false }}">
+<main style="padding-top:40px">
+<h1 style="font:400 56px/1 'Instrument Serif',serif;margin:0 0 22px">À propos</h1>
+<sc-for list="{{ about.paras }}" as="pa" hint-placeholder-count="3"><p style="font-size:19px;line-height:1.7;margin:0 0 18px;text-wrap:pretty">{{ pa }}</p></sc-for>
+<div style="font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:{{ t.faint }};margin:36px 0 10px">Ce que j'utilise</div>
+<ul style="margin:0;padding-left:22px"><sc-for list="{{ about.tools }}" as="tl" hint-placeholder-count="3"><li style="font-size:18px;line-height:1.6;margin-bottom:4px">{{ tl }}</li></sc-for></ul>
+<div style="font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:{{ t.faint }};margin:36px 0 10px">Me trouver</div>
+<sc-for list="{{ about.contact }}" as="ct" hint-placeholder-count="3"><div style="font-size:18px;line-height:1.9"><span style="color:{{ t.faint }}">{{ ct.label }} :</span> <span style="color:{{ t.pink }};text-decoration:underline">{{ ct.value }}</span></div></sc-for>
+</main>
+</sc-if>
+
+<footer style="margin-top:64px;padding-top:16px;border-top:2px dotted {{ t.rule }};font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:{{ t.faint }};display:flex;justify-content:space-between"><span>© 2026 Alex Moreau · écrit en Markdown</span><span>publié par tag git</span></footer>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;clair&quot;,&quot;sombre&quot;],&quot;default&quot;:&quot;clair&quot;,&quot;tsType&quot;:&quot;'clair'|'sombre'&quot;},&quot;page&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;projets&quot;,&quot;projet&quot;,&quot;entree&quot;,&quot;revues&quot;,&quot;revue&quot;,&quot;apropos&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { page: this.props.page || 'home', c: null, dark: null };
+  componentDidMount() { import('./content.js').then(m => this.setState({ c: m })); }
+  renderVals() {
+    const dark = this.state.dark ?? (this.props.theme === 'sombre');
+    const t = dark ? {
+      name: 'sombre', toggle: '☀ clair', bg: '#141416', bar: '#1e1e21', ink: '#ececee', muted: '#a8a8ad', faint: '#86868b', rule: '#38383c', soft: '#1c1c1f', ph1: '#222225', ph2: '#2a2a2d', code: '#1c1c1f',
+      pink: 'oklch(0.76 0.14 350)', teal: 'oklch(0.78 0.1 210)', tealBg: 'oklch(0.25 0.03 210)', green: 'oklch(0.78 0.13 150)', amber: 'oklch(0.8 0.12 75)'
+    } : {
+      name: 'clair', toggle: '☾ sombre', bg: '#fbfbfa', bar: '#ebebe9', ink: '#1d1d1f', muted: '#55555a', faint: '#7f7f84', rule: '#cfcfcb', soft: '#f2f2f0', ph1: '#e6e6e3', ph2: '#f3f3f1', code: '#f1f1ef',
+      pink: 'oklch(0.52 0.2 350)', teal: 'oklch(0.48 0.12 210)', tealBg: 'oklch(0.96 0.025 210)', green: 'oklch(0.5 0.14 150)', amber: 'oklch(0.55 0.13 70)'
+    };
+    const T = { avancee: [t.pink, '+', 'avancée'], idee: [t.green, '?', 'idée'], abandon: [t.faint, '−', 'abandonnée'], afaire: [t.amber, '□', 'à-faire'] };
+    const K = dark ? { kw: 'oklch(0.76 0.14 350)', str: 'oklch(0.8 0.12 150)', fn: 'oklch(0.8 0.1 210)', com: '#7a7a7f', num: 'oklch(0.82 0.12 75)', p: '#ececee' } : { kw: 'oklch(0.5 0.2 350)', str: 'oklch(0.5 0.13 150)', fn: 'oklch(0.48 0.12 210)', com: '#8a8a8e', num: 'oklch(0.55 0.14 60)', p: '#1d1d1f' };
+    const S = { 'en cours': [t.pink, '●'], 'en pause': [t.amber, '◐'], 'terminé': [t.faint, '○'] };
+    const c = this.state.c || {}, page = this.state.page, go = k => () => this.setState({ page: k });
+    const pages = [['home', 'Accueil'], ['projets', 'Projets'], ['projet', 'Page projet'], ['entree', 'Entrée de journal'], ['revues', 'Revues'], ['revue', 'Revue tech'], ['apropos', 'À propos']];
+    const entries = (c.entries || []).map(e => ({ ...e, color: T[e.type][0], sym: T[e.type][1], tag: T[e.type][2], deco: e.type === 'abandon' ? 'line-through' : 'none', go: go('entree') }));
+    const blocks = (c.article || []).map(b => ({ ...b, isP: b.t === 'p', isH2: b.t === 'h2', isUl: b.t === 'ul', isCode: b.t === 'code', isQuote: b.t === 'quote', isTable: b.t === 'table', isImg: b.t === 'img', lines: (b.lines || []).map(l => l.map(([k, v]) => ({ v, color: K[k] }))) }));
+    const revues = (c.revues || []).map(r => ({ ...r, go: go('revue') }));
+    const sec = ['projets', 'projet', 'entree'].includes(page) ? 'projets' : ['revues', 'revue'].includes(page) ? 'revue' : page;
+    const u = k => sec === k ? 'underline' : 'none';
+    const projects = (c.projects || []).map(p => ({ ...p, sc: S[p.status][0], glyph: S[p.status][1], techStr: p.tech.join(', '), go: go('projet') }));
+    const groups = ['en cours', 'en pause', 'terminé'].map(s => ({ label: s, color: S[s][0], glyph: S[s][1], items: projects.filter(p => p.status === s) }));
+    return {
+      t, toggleTheme: () => this.setState({ dark: !dark }),
+      picker: pages.map(([k, l]) => ({ label: l, go: go(k), bg: page === k ? t.ink : 'transparent', fg: page === k ? t.bg : t.muted })),
+      nv: { home: u('home'), projets: u('projets'), revue: u('revue'), apropos: u('apropos') },
+      isHome: page === 'home', isProjets: page === 'projets', isProjet: page === 'projet', isEntree: page === 'entree', isRevues: page === 'revues', isRevue: page === 'revue', isApropos: page === 'apropos',
+      goHome: go('home'), goProjets: go('projets'), goProjet: go('projet'), goRevues: go('revues'), goApropos: go('apropos'),
+      site: c.site || {}, project: c.project || {}, revue: c.revue || {}, about: c.about || {},
+      projects, groups,
+      legend: Object.keys(T).map(k => ({ color: T[k][0], sym: T[k][1], tag: T[k][2] })),
+      entries, recent: entries.slice(0, 3), blocks, revues, latestRevues: revues.slice(0, 2)
+    };
+  }
+}
+</script>
+</body>
+</html>

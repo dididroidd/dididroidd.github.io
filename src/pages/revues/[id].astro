@@ -1,7 +1,10 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
-import Article from '../../layouts/Article.astro';
+import Base from '../../layouts/Base.astro';
 import { isPublished } from '../../lib/contenu';
+import { formatDateLongue } from '../../lib/date';
+import { libelleSujets, nombreSujets } from '../../lib/revues';
+import { NOM_SITE, VILLE } from '../../lib/site';
 import { url } from '../../lib/url';
 
 export async function getStaticPaths() {
@@ -14,10 +17,23 @@ interface Props {
 }
 
 const { revue } = Astro.props;
+const { titre, date, numero, resume } = revue.data;
 const { Content } = await render(revue);
+const sujets = await nombreSujets(revue);
 ---
 
-<Article titre={revue.data.titre} date={revue.data.date} type="revue" description={revue.data.resume}>
-  <Content />
-  <p slot="apres" class="retour"><a href={url('/revues/')}>← Toutes les revues</a></p>
-</Article>
+<Base titre={titre} description={resume} section="revue">
+  <header class="masthead">
+    <a class="retour" href={url('/revues/')}>← Lettre hebdomadaire de {NOM_SITE}</a>
+    <div class="titre-revue">La <i>Revue</i></div>
+    <div class="infos">
+      <span>N°{numero}</span>
+      <span>{VILLE}, {formatDateLongue(date)}</span>
+      <span>{libelleSujets(sujets)}</span>
+    </div>
+  </header>
+  <h1 class="titre-lettre">{titre}</h1>
+  <div class="prose lettre">
+    <Content />
+  </div>
+</Base>

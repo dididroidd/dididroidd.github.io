@@ -1,15 +1,41 @@
 ---
-import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
-import CarteProjet from '../../components/CarteProjet.astro';
-import { isPublished } from '../../lib/contenu';
+import { formatMois } from '../../lib/date';
+import { projetsPublies } from '../../lib/projets';
+import { STATUTS, type Statut } from '../../lib/statut';
+import { url } from '../../lib/url';
 
-const projets = (await getCollection('projets', isPublished)).sort((a, b) => a.data.ordre - b.data.ordre);
+const projets = await projetsPublies();
+const groupes = (Object.keys(STATUTS) as Statut[])
+  .map((statut) => ({ statut, ...STATUTS[statut], projets: projets.filter((p) => p.data.statut === statut) }))
+  .filter((g) => g.projets.length > 0);
 ---
 
-<Base titre="Projets">
-  <h1>Projets</h1>
-  <div class="grille-projets">
-    {projets.map((p) => <CarteProjet projet={p} />)}
-  </div>
+<Base titre="Projets" section="projets">
+  <h1 class="titre-page">Projets</h1>
+  <p class="chapo">Du plus vivant au plus fini. Chacun a son journal de bord.</p>
+  {
+    groupes.map((g) => (
+      <section>
+        <div class:list={['surtitre', 'groupe', `statut--${g.statut}`]}>
+          {g.symbole} {g.label}
+        </div>
+        {g.projets.map((p) => (
+          <div class="fiche">
+            <div class="vignette hachures">{p.data.image && <Image src={p.data.image} alt="" width={300} />}</div>
+            <div>
+              <a class="nom-projet" href={url(`/projets/${p.id}/`)}>
+                {p.data.titre}
+              </a>
+              <div class="resume">{p.data.resume}</div>
+              <div class="discret">
+                {[...p.data.technos, `depuis ${formatMois(p.data.depuis)}`].join(' · ')}
+              </div>
+            </div>
+          </div>
+        ))}
+      </section>
+    ))
+  }
 </Base>

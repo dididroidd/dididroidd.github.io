@@ -5,7 +5,7 @@ describe('rss', () => {
   test('le flux liste revues et journal, sans les brouillons', () => {
     buildWith(
       {
-        'src/content/revues/__test-brouillon.md': '---\ntitre: Revue secrète\ndate: 2026-10-27\ndraft: true\n---\nx\n',
+        'src/content/revues/__test-brouillon.md': '---\ntitre: Revue secrète\ndate: 2026-10-27\nnumero: 99\ndraft: true\n---\nx\n',
       },
       () => {
         expect(exists('rss.xml')).toBe(true);

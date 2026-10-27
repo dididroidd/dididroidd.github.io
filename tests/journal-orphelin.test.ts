@@ -4,7 +4,7 @@ import { test, expect } from 'vitest';
 
 test('une entrée de journal vers un projet inconnu fait échouer le build', () => {
   const f = 'src/content/journal/__test-orphelin.md';
-  writeFileSync(f, '---\ntitre: x\ndate: 2026-10-26\nprojet: projet-inexistant\n---\nx\n');
+  writeFileSync(f, '---\ntitre: x\ndate: 2026-10-26\nprojet: projet-inexistant\ntype: idee\n---\nx\n');
   try {
     expect(() => execSync('npx astro build', { stdio: 'pipe' })).toThrow(/projet-inexistant/);
   } finally {

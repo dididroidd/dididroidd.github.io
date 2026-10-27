@@ -17,14 +17,20 @@ titre: App de recueil
 resume: Une phrase qui dit ce que c'est.
 statut: en-cours        # en-cours | en-pause | termine
 technos: [TypeScript, SQLite]
+depuis: 2026-03-01      # début du projet (affiché « depuis mars 2026 »)
 ordre: 1                # position sur l'accueil (plus petit = plus haut)
 liens:                  # facultatif
   demo: https://…
   code: https://github.com/…
 ---
 
+## Pourquoi
+
 Présentation du projet.
 ```
+
+Une image de capture est possible avec `image: ./capture.png` (fichier à côté du `.md`).
+Sur la page « Projets », les projets sont classés par statut.
 
 ### Une entrée de journal
 
@@ -35,8 +41,14 @@ Copier `src/content/journal/2026-10-26-demarrage.md`, la renommer (`AAAA-MM-JJ-s
 titre: Ce que j'ai fait aujourd'hui
 date: 2026-10-27
 projet: app-recueil     # nom du fichier du projet, sans .md
+type: avancee           # avancee (+) | idee (?) | abandon (−) | afaire (□)
+resume: Une ou deux phrases, affichées dans le fil du journal.
+tags: [sqlite, wasm]    # facultatif
 ---
 ```
+
+L'identifiant façon commit (`a3f9c1`) est calculé à partir du nom du fichier : ne pas renommer
+un fichier déjà publié si on veut garder le même identifiant.
 
 Si `projet` ne correspond à aucun projet, le build échoue avec un message qui le dit.
 
@@ -48,9 +60,40 @@ Créer `src/content/revues/AAAA-sNN.md` (année et numéro de semaine) :
 ---
 titre: Revue tech — semaine 44
 date: 2026-10-26
+numero: 1               # N° de la revue
 resume: Une phrase de résumé (facultatif).
 ---
+
+Salut à tous,
+
+Une phrase d'introduction.
+
+## Titre du premier sujet
+
+*Source : Hacker News*
+
+Ce qui s'est passé.
+
+> **Mon avis :** ce que j'en pense.
+
+## En bref
+
+- Une petite nouvelle.
+
+*Bonne semaine, Didi*
 ```
+
+La mise en page de lettre repose sur ces conventions :
+- chaque `## Titre` est un sujet, numéroté automatiquement (01, 02…) et compté dans l'en-tête ;
+- une ligne seule en italique juste sous le titre devient la source (`*Source : …*`) ;
+- une citation `> **Mon avis :** …` devient l'encadré « Mon avis » ;
+- `## En bref` n'est pas compté comme un sujet ;
+- le dernier paragraphe, s'il est tout en italique, devient la signature.
+
+## Infos du site
+
+Nom, ville, lien GitHub, accroche et intro de l'accueil : `src/lib/site.ts`.
+Photo : `src/assets/avatar.png`. Maquette de référence : `design/` (direction 3a, « Fil v2 »).
 
 ### Brouillons
 

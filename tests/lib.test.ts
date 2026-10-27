@@ -26,3 +26,25 @@ test('url', () => {
   expect(url('/projets/', '/blog/')).toBe('/blog/projets/');
   expect(url('projets/', '/blog')).toBe('/blog/projets/');
 });
+
+import { idCourt, tempsLecture } from '../src/lib/journal-format';
+import { formatDateCourte, formatDateLongue, formatMois } from '../src/lib/date';
+
+test('idCourt : 6 caractères hexadécimaux, stable, différent selon l\'entrée', () => {
+  const a = idCourt('2026-10-26-demarrage');
+  expect(a).toMatch(/^[0-9a-f]{6}$/);
+  expect(idCourt('2026-10-26-demarrage')).toBe(a);
+  expect(idCourt('2026-10-27-autre')).not.toBe(a);
+});
+
+test('tempsLecture : au moins 1 min, ~200 mots par minute', () => {
+  expect(tempsLecture('')).toBe(1);
+  expect(tempsLecture('mot '.repeat(450))).toBe(3);
+});
+
+test('formats de date', () => {
+  const d = new Date('2026-10-26');
+  expect(formatDateCourte(d)).toBe('26 oct. 2026');
+  expect(formatDateLongue(d)).toBe('lundi 26 octobre 2026');
+  expect(formatMois(d)).toBe('octobre 2026');
+});

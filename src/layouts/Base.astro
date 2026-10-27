@@ -1,15 +1,20 @@
 ---
 import '../styles/global.css';
+import { Image } from 'astro:assets';
+import avatar from '../assets/avatar.png';
 import { url } from '../lib/url';
-import { DESCRIPTION_SITE, NOM_SITE } from '../lib/site';
+import { DESCRIPTION_SITE, GITHUB, NOM_SITE, VILLE } from '../lib/site';
 
 interface Props {
   titre?: string;
   description?: string;
+  /** Rubrique soulignée dans la navigation. */
+  section?: 'accueil' | 'projets' | 'revue' | 'apropos';
 }
 
-const { titre, description = DESCRIPTION_SITE } = Astro.props;
+const { titre, description = DESCRIPTION_SITE, section } = Astro.props;
 const titreComplet = titre ? `${titre} · ${NOM_SITE}` : NOM_SITE;
+const courant = (s: Props['section']) => (s === section ? 'page' : undefined);
 ---
 
 <!doctype html>
@@ -20,22 +25,65 @@ const titreComplet = titre ? `${titre} · ${NOM_SITE}` : NOM_SITE;
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
     <link rel="alternate" type="application/rss+xml" title={NOM_SITE} href={new URL(url('/rss.xml'), Astro.site)} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,600;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;500;700&display=swap"
+    />
     <title>{titreComplet}</title>
+    <script is:inline>
+      // Applique le thème choisi avant l'affichage, pour éviter un flash.
+      try {
+        const t = localStorage.getItem('theme');
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      } catch {}
+    </script>
   </head>
   <body>
-    <header class="entete">
-      <a class="logo" href={url('/')}>{NOM_SITE}</a>
-      <nav>
-        <a href={url('/projets/')}>Projets</a>
-        <a href={url('/revues/')}>Revue tech</a>
-        <a href={url('/a-propos/')}>À propos</a>
+    <div class="page">
+      <header class="entete">
+        <a href={url('/')} aria-label="Accueil">
+          <Image src={avatar} alt="" width={128} height={128} class="avatar" loading="eager" />
+        </a>
+        <div class="identite">
+          <a class="nom" href={url('/')}>{NOM_SITE}</a>
+          <div class="surtitre">Dev · {VILLE} · carnet de fabrication</div>
+        </div>
+        <button type="button" class="bascule-theme" data-bascule-theme>☾ sombre</button>
+      </header>
+      <nav class="nav">
+        <a href={url('/')} aria-current={courant('accueil')}>accueil</a>
+        <a class="nav-projets" href={url('/projets/')} aria-current={courant('projets')}>projets</a>
+        <a class="nav-revue" href={url('/revues/')} aria-current={courant('revue')}>revue tech</a>
+        <a href={url('/a-propos/')} aria-current={courant('apropos')}>à propos</a>
+        <span class="nav-externe"><a href={GITHUB}>github</a> · <a href={url('/rss.xml')}>rss</a></span>
       </nav>
-    </header>
-    <main>
-      <slot />
-    </main>
-    <footer class="pied">
-      <p>{NOM_SITE} · {new Date().getFullYear()}</p>
-    </footer>
+      <main>
+        <slot />
+      </main>
+      <footer class="pied surtitre">
+        <span>© {new Date().getFullYear()} {NOM_SITE} · écrit en Markdown</span>
+        <span>publié par tag git</span>
+      </footer>
+    </div>
+    <script>
+      const bouton = document.querySelector<HTMLButtonElement>('[data-bascule-theme]');
+      const racine = document.documentElement;
+      const sombre = () =>
+        racine.dataset.theme ? racine.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+      const majBouton = () => {
+        if (bouton) bouton.textContent = sombre() ? '☀ clair' : '☾ sombre';
+      };
+      majBouton();
+      bouton?.addEventListener('click', () => {
+        const theme = sombre() ? 'light' : 'dark';
+        racine.dataset.theme = theme;
+        try {
+          localStorage.setItem('theme', theme);
+        } catch {}
+        majBouton();
+      });
+    </script>
   </body>
 </html>

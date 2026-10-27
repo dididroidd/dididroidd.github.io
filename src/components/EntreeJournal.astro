@@ -1,0 +1,28 @@
+---
+// Une entrée dans le fil du journal de bord (page projet), façon git log.
+import type { CollectionEntry } from 'astro:content';
+import { formatDateCourte } from '../lib/date';
+import { TYPES_JOURNAL, idCourt } from '../lib/journal-format';
+import { url } from '../lib/url';
+
+interface Props {
+  entree: CollectionEntry<'journal'>;
+}
+
+const { entree } = Astro.props;
+const { titre, date, type, resume } = entree.data;
+const t = TYPES_JOURNAL[type];
+---
+
+<a class:list={['entree', `entree--${type}`]} href={url(`/journal/${entree.id}/`)}>
+  <div class="rail"><span class:list={['symbole', `t-${type}`]}>{t.symbole}</span><span class="trait"></span></div>
+  <div class="corps">
+    <div class="meta">
+      <span class="id-court">{idCourt(entree.id)}</span>
+      <span class="discret">{formatDateCourte(date)}</span>
+      <span class:list={['tag', `t-${type}`]}>#{t.tag}</span>
+    </div>
+    <div class="titre">{titre}</div>
+    {resume && <div class="resume">{resume}</div>}
+  </div>
+</a>

@@ -1,23 +1,44 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import ListeArticles from '../../components/ListeArticles.astro';
 import { byDateDesc, isPublished } from '../../lib/contenu';
+import { formatDateCourte } from '../../lib/date';
+import { libelleSujets, nombreSujets } from '../../lib/revues';
 import { url } from '../../lib/url';
 
-const revues = (await getCollection('revues', isPublished)).sort(byDateDesc);
+const revues = await Promise.all(
+  (await getCollection('revues', isPublished))
+    .sort(byDateDesc)
+    .map(async (r) => ({ revue: r, sujets: await nombreSujets(r) })),
+);
+const annees = [...new Set(revues.map(({ revue }) => revue.data.date.getUTCFullYear()))];
 ---
 
-<Base titre="Revue tech">
-  <h1>Revue tech</h1>
-  <p class="chapo">Chaque semaine, ce qui s'est passé dans la tech et ce que j'en pense.</p>
-  <ListeArticles
-    articles={revues.map((r) => ({
-      href: url(`/revues/${r.id}/`),
-      titre: r.data.titre,
-      date: r.data.date,
-      resume: r.data.resume,
-    }))}
-    vide="Pas encore de revue."
-  />
+<Base titre="Revue tech" section="revue">
+  <h1 class="titre-page">La <i>revue</i> tech</h1>
+  <p class="chapo" style="margin-bottom:6px">
+    Chaque dimanche, ce qui m'a marqué dans la semaine tech, avec mon avis. Pour les amis et les devs curieux.
+  </p>
+  <a class="lien-rss" href={url('/rss.xml')}>S'abonner par RSS</a>
+  {revues.length === 0 && <p class="vide">Pas encore de revue.</p>}
+  {
+    annees.map((annee) => (
+      <section>
+        <div class="surtitre annee">{annee}</div>
+        {revues
+          .filter(({ revue }) => revue.data.date.getUTCFullYear() === annee)
+          .map(({ revue, sujets }) => (
+            <div class="ligne-revue">
+              <span class="numero">N°{revue.data.numero}</span>
+              <div>
+                <a href={url(`/revues/${revue.id}/`)}>{revue.data.titre}</a>
+                <div class="discret">
+                  {formatDateCourte(revue.data.date)} · {libelleSujets(sujets)}
+                </div>
+              </div>
+            </div>
+          ))}
+      </section>
+    ))
+  }
 </Base>

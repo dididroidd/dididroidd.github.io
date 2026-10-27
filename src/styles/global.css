@@ -1,36 +1,93 @@
-/* Thème minimal : ces variables seront remplacées par la direction visuelle 3a. */
+/* Direction visuelle 3a (« Fil v2 ») — voir design/Fil v2.dc.html. */
 :root {
-  color-scheme: light dark;
-  --fond: #fdfdfc;
-  --fond-doux: #f2f1ee;
-  --texte: #1d1d1b;
-  --texte-doux: #66645e;
-  --bordure: #dedcd6;
-  --accent: #2f5bd3;
-  --accent-journal: #b4581a;
-  --accent-revue: #2f5bd3;
-  --mesure: 68ch;
-  --police: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --police-code: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  color-scheme: light;
+  --fond: #fbfbfa;
+  --barre: #ebebe9;
+  --encre: #1d1d1f;
+  --doux: #55555a;
+  --pale: #7f7f84;
+  --filet: #cfcfcb;
+  --survol: #f2f2f0;
+  --hachure-1: #e6e6e3;
+  --hachure-2: #f3f3f1;
+  --code: #f1f1ef;
+  --rose: oklch(0.52 0.2 350);
+  --rose-fonce: oklch(0.42 0.2 350);
+  --bleu: oklch(0.48 0.12 210);
+  --bleu-fond: oklch(0.96 0.025 210);
+  --vert: oklch(0.5 0.14 150);
+  --ambre: oklch(0.55 0.13 70);
+
+  /* Coloration du code (thème Shiki « css-variables ») */
+  --astro-code-foreground: var(--encre);
+  --astro-code-background: var(--code);
+  --astro-code-token-keyword: oklch(0.5 0.2 350);
+  --astro-code-token-string: oklch(0.5 0.13 150);
+  --astro-code-token-string-expression: oklch(0.5 0.13 150);
+  --astro-code-token-function: oklch(0.48 0.12 210);
+  --astro-code-token-comment: #8a8a8e;
+  --astro-code-token-constant: oklch(0.55 0.14 60);
+  --astro-code-token-parameter: var(--encre);
+  --astro-code-token-punctuation: var(--encre);
+  --astro-code-token-link: var(--rose);
+
+  --serif: 'Instrument Serif', Georgia, serif;
+  --sans: 'Atkinson Hyperlegible Next', system-ui, sans-serif;
+  --mono: 'Atkinson Hyperlegible Mono', ui-monospace, Menlo, monospace;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --fond: #151514;
-    --fond-doux: #1f1f1d;
-    --texte: #e8e6e1;
-    --texte-doux: #a09d95;
-    --bordure: #34332f;
-    --accent: #7d9cf0;
-    --accent-journal: #e8935a;
-    --accent-revue: #7d9cf0;
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --fond: #141416;
+    --barre: #1e1e21;
+    --encre: #ececee;
+    --doux: #a8a8ad;
+    --pale: #86868b;
+    --filet: #38383c;
+    --survol: #1c1c1f;
+    --hachure-1: #222225;
+    --hachure-2: #2a2a2d;
+    --code: #1c1c1f;
+    --rose: oklch(0.76 0.14 350);
+    --rose-fonce: oklch(0.86 0.1 350);
+    --bleu: oklch(0.78 0.1 210);
+    --bleu-fond: oklch(0.25 0.03 210);
+    --vert: oklch(0.78 0.13 150);
+    --ambre: oklch(0.8 0.12 75);
+    --astro-code-token-keyword: oklch(0.76 0.14 350);
+    --astro-code-token-string: oklch(0.8 0.12 150);
+    --astro-code-token-string-expression: oklch(0.8 0.12 150);
+    --astro-code-token-function: oklch(0.8 0.1 210);
+    --astro-code-token-comment: #7a7a7f;
+    --astro-code-token-constant: oklch(0.82 0.12 75);
   }
+}
 
-  .astro-code,
-  .astro-code span {
-    color: var(--shiki-dark) !important;
-    background-color: var(--shiki-dark-bg) !important;
-  }
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --fond: #141416;
+  --barre: #1e1e21;
+  --encre: #ececee;
+  --doux: #a8a8ad;
+  --pale: #86868b;
+  --filet: #38383c;
+  --survol: #1c1c1f;
+  --hachure-1: #222225;
+  --hachure-2: #2a2a2d;
+  --code: #1c1c1f;
+  --rose: oklch(0.76 0.14 350);
+  --rose-fonce: oklch(0.86 0.1 350);
+  --bleu: oklch(0.78 0.1 210);
+  --bleu-fond: oklch(0.25 0.03 210);
+  --vert: oklch(0.78 0.13 150);
+  --ambre: oklch(0.8 0.12 75);
+  --astro-code-token-keyword: oklch(0.76 0.14 350);
+  --astro-code-token-string: oklch(0.8 0.12 150);
+  --astro-code-token-string-expression: oklch(0.8 0.12 150);
+  --astro-code-token-function: oklch(0.8 0.1 210);
+  --astro-code-token-comment: #7a7a7f;
+  --astro-code-token-constant: oklch(0.82 0.12 75);
 }
 
 *,
@@ -46,26 +103,20 @@ html {
 body {
   margin: 0;
   background: var(--fond);
-  color: var(--texte);
-  font-family: var(--police);
-  font-size: 1.0625rem;
-  line-height: 1.65;
-}
-
-main,
-.entete,
-.pied {
-  max-width: 60rem;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-main {
-  padding-block: 2rem 4rem;
+  color: var(--encre);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 a {
-  color: var(--accent);
+  color: var(--rose);
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  color: var(--rose-fonce);
 }
 
 img {
@@ -73,222 +124,879 @@ img {
   height: auto;
 }
 
-h1,
-h2,
-h3 {
-  line-height: 1.25;
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 56px 24px 64px;
 }
 
-/* En-tête et pied */
+main {
+  padding-top: 40px;
+}
+
+/* Petites capitales */
+.surtitre {
+  font-size: 12px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--pale);
+}
+
+.mono {
+  font-family: var(--mono);
+}
+
+.hachures {
+  background: repeating-linear-gradient(135deg, var(--hachure-1) 0 5px, var(--hachure-2) 5px 10px);
+}
+
+/* En-tête */
 .entete {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1.5rem;
-  align-items: baseline;
-  justify-content: space-between;
-  padding-block: 1.25rem;
-  border-bottom: 1px solid var(--bordure);
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.entete nav {
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  flex: none;
+  object-fit: cover;
+  display: block;
+}
+
+.identite {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.entete a {
-  color: var(--texte);
+.nom {
+  font: 400 30px/1 var(--serif);
+  color: var(--encre);
   text-decoration: none;
 }
 
-.logo {
-  font-weight: 700;
+.bascule-theme {
+  margin-left: auto;
+  cursor: pointer;
+  border: 1px solid var(--filet);
+  background: transparent;
+  color: var(--doux);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font: 400 13px var(--sans);
+  white-space: nowrap;
 }
 
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  font-size: 16px;
+  padding-bottom: 16px;
+  border-bottom: 2px dotted var(--filet);
+}
+
+.nav a {
+  color: var(--encre);
+  text-decoration: none;
+  text-underline-offset: 5px;
+  text-decoration-thickness: 2px;
+}
+
+.nav a[aria-current='page'] {
+  text-decoration-line: underline;
+}
+
+.nav .nav-projets {
+  color: var(--rose);
+}
+
+.nav .nav-revue {
+  color: var(--bleu);
+}
+
+.nav .nav-externe {
+  margin-left: auto;
+  color: var(--pale);
+}
+
+.nav .nav-externe a {
+  color: var(--pale);
+}
+
+/* Pied */
 .pied {
-  padding-block: 2rem;
-  color: var(--texte-doux);
-  font-size: 0.875rem;
-  border-top: 1px solid var(--bordure);
+  margin-top: 64px;
+  padding-top: 16px;
+  border-top: 2px dotted var(--filet);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+/* Titres */
+.titre-page {
+  font: 400 56px/1 var(--serif);
+  margin: 0 0 12px;
+}
+
+.chapo {
+  font-size: 19px;
+  line-height: 1.6;
+  margin: 0 0 20px;
+  color: var(--doux);
+  text-wrap: pretty;
 }
 
 /* Accueil */
+.accroche {
+  font: 400 52px/1.05 var(--serif);
+  letter-spacing: -0.01em;
+  margin: 0 0 18px;
+  text-wrap: pretty;
+}
+
 .intro {
-  max-width: var(--mesure);
-  margin-bottom: 3rem;
+  font-size: 19px;
+  line-height: 1.65;
+  margin: 0 0 44px;
+  color: var(--doux);
+  text-wrap: pretty;
 }
 
-.intro h1 {
-  font-size: clamp(1.75rem, 5vw, 2.5rem);
+.titre-section {
+  font: 400 34px/1.1 var(--serif);
+  margin: 0 0 16px;
 }
 
-.secondaire {
-  margin-top: 3rem;
-  font-size: 0.95rem;
+.liste-projets {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 44px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
-.secondaire h2 {
-  font-size: 1.15rem;
+.liste-projets .ligne {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  flex-wrap: wrap;
 }
 
-/* Projets */
-.grille-projets {
+.liste-projets .nom-projet {
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.liste-projets .resume {
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--doux);
+  margin-top: 3px;
+}
+
+.statut {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.statut--en-cours {
+  color: var(--rose);
+}
+
+.statut--en-pause {
+  color: var(--ambre);
+}
+
+.statut--termine {
+  color: var(--pale);
+}
+
+.discret {
+  font-size: 14px;
+  color: var(--pale);
+}
+
+.recents {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px 0 44px;
+}
+
+.recent {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
-  gap: 1rem;
+  grid-template-columns: 22px 70px minmax(0, 1fr);
+  gap: 10px;
+  align-items: baseline;
+  font-size: 17px;
 }
 
-.carte-projet {
-  display: block;
-  padding: 1.25rem;
-  border: 1px solid var(--bordure);
-  border-radius: 0.5rem;
+.recent a {
+  color: inherit;
+  text-decoration-color: var(--filet);
+}
+
+.encart-revue {
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: var(--bleu-fond);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.encart-revue .tete {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.encart-revue .tete span {
+  font: 400 24px var(--serif);
+  color: var(--bleu);
+}
+
+.encart-revue a {
+  color: var(--bleu);
+}
+
+.encart-revue .item {
+  font-size: 16px;
+  display: flex;
+  gap: 12px;
+}
+
+.encart-revue .item a {
   color: inherit;
   text-decoration: none;
 }
 
-.carte-projet:hover {
-  border-color: var(--accent);
+/* Types d'entrée de journal */
+.t-avancee {
+  color: var(--rose);
 }
 
-.carte-projet h3 {
-  margin: 0 0 0.5rem;
+.t-idee {
+  color: var(--vert);
 }
 
-.carte-projet p {
-  margin: 0 0 0.5rem;
+.t-abandon {
+  color: var(--pale);
 }
 
-.statut {
-  display: inline-block;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--accent-journal);
+.t-afaire {
+  color: var(--ambre);
 }
 
-.chapo {
-  font-size: 1.15rem;
-  color: var(--texte-doux);
-  max-width: var(--mesure);
+.symbole {
+  font: 500 16px var(--mono);
 }
 
-.meta {
-  color: var(--texte-doux);
-  font-size: 0.875rem;
+.id-court {
+  font: 400 13px var(--mono);
+  color: var(--pale);
 }
 
-.liens {
+/* Page Projets */
+.groupe {
+  margin: 30px 0 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--filet);
+}
+
+.fiche {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 18px;
+  padding: 12px 0;
+}
+
+.vignette {
+  height: 96px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.vignette img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fiche .nom-projet {
+  font: 400 28px/1.1 var(--serif);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.fiche .resume {
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--doux);
+  margin: 6px 0;
+}
+
+/* Page projet */
+.fil-ariane {
+  margin-bottom: 10px;
+}
+
+.fil-ariane a {
+  color: var(--rose);
+  text-decoration: none;
+}
+
+.titre-projet {
+  font: 400 88px/0.95 var(--serif);
+  letter-spacing: -0.02em;
+  margin: 0 0 18px;
+}
+
+.pitch {
+  font-size: 20px;
+  line-height: 1.6;
+  margin: 0 0 20px;
+  text-wrap: pretty;
+}
+
+.fiche-meta {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: start;
+  gap: 8px 36px;
+  margin-bottom: 26px;
+  padding: 14px 0;
+  border-top: 1px solid var(--filet);
+  border-bottom: 1px solid var(--filet);
+}
+
+.fiche-meta .surtitre {
+  font-size: 11px;
+  margin-bottom: 3px;
+}
+
+.fiche-meta .liens {
   display: flex;
-  gap: 1rem;
+  gap: 14px;
 }
 
-.journal {
-  max-width: var(--mesure);
-  margin-top: 3rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--bordure);
+.fiche-meta .technos {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 14px;
+  color: var(--doux);
 }
 
-/* Listes d'articles */
-.liste-articles {
-  list-style: none;
-  padding: 0;
+.capture {
+  border-radius: 14px;
+  margin-bottom: 30px;
+  overflow: hidden;
+}
+
+.capture img {
+  display: block;
+  width: 100%;
+}
+
+.journal-tete {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-top: 2px dotted var(--filet);
+  padding-top: 26px;
+  margin: 48px 0 8px;
+}
+
+.journal-tete h2 {
+  font: 400 40px var(--serif);
   margin: 0;
 }
 
-.liste-articles li {
-  padding-block: 0.75rem;
-  border-bottom: 1px solid var(--bordure);
+.legende {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  font-size: 14px;
+  margin-bottom: 18px;
 }
 
-.liste-articles time {
-  display: block;
-  color: var(--texte-doux);
-  font-size: 0.85rem;
+.legende b {
+  font-family: var(--mono);
 }
 
-.liste-articles p {
-  margin: 0.25rem 0 0;
-  color: var(--texte-doux);
+.mois {
+  font-size: 11px;
+  margin: 10px 0 6px;
+}
+
+.entree {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 10px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.entree:hover {
+  background: var(--survol);
+  color: inherit;
+}
+
+.entree .rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.entree .rail .symbole {
+  font: 700 17px/26px var(--mono);
+}
+
+.entree .rail .trait {
+  flex: 1;
+  border-left: 1px solid var(--filet);
+}
+
+.entree .corps {
+  padding: 0 0 24px;
+}
+
+.entree .meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 12px;
+  font: 400 13px/26px var(--mono);
+}
+
+.entree .meta .id-court {
+  color: var(--ambre);
+}
+
+.entree .meta .tag {
+  font: 400 14px/26px var(--sans);
+}
+
+.entree .titre {
+  font-size: 19px;
+  font-weight: 600;
+  margin: 2px 0 4px;
+}
+
+.entree--abandon .titre {
+  text-decoration: line-through;
+  text-decoration-color: var(--pale);
+}
+
+.entree .resume {
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--doux);
 }
 
 .vide {
-  color: var(--texte-doux);
+  color: var(--pale);
   font-style: italic;
 }
 
-/* Articles */
-.article,
-.projet {
-  max-width: var(--mesure);
+/* Entrée de journal */
+.entree-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: baseline;
+  margin-bottom: 14px;
 }
 
-.badge {
-  display: inline-block;
-  margin: 0;
-  padding: 0.15rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--fond);
+.entree-meta a {
+  color: var(--rose);
+  text-decoration: none;
 }
 
-.badge--journal {
-  background: var(--accent-journal);
+.entree-meta .id-court {
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ambre);
 }
 
-.badge--revue {
-  background: var(--accent-revue);
+.titre-article {
+  font: 400 56px/1.02 var(--serif);
+  letter-spacing: -0.01em;
+  margin: 0 0 14px;
+  text-wrap: pretty;
 }
 
-.article h1 {
-  margin-block: 0.5rem 0.25rem;
+.etiquettes {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 15px;
+  margin-bottom: 32px;
+  color: var(--doux);
 }
 
-.retour {
-  margin-top: 3rem;
+.etiquettes b {
+  font-family: var(--mono);
+}
+
+.suite {
+  border-top: 2px dotted var(--filet);
+  margin-top: 36px;
+  padding-top: 16px;
+  font-size: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.suite .precedente {
+  color: var(--pale);
+  text-decoration: none;
 }
 
 /* Contenu Markdown */
-.prose {
-  max-width: var(--mesure);
-  overflow-wrap: break-word;
+.prose p,
+.prose li {
+  font-size: 19px;
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+.prose p {
+  margin: 0 0 20px;
+}
+
+.prose h2 {
+  font: 400 34px var(--serif);
+  margin: 40px 0 12px;
+}
+
+.prose h3 {
+  font: 400 26px var(--serif);
+  margin: 32px 0 10px;
+}
+
+.prose ul,
+.prose ol {
+  margin: 0 0 22px;
+  padding-left: 24px;
+}
+
+.prose li {
+  margin-bottom: 6px;
+  padding-left: 4px;
 }
 
 .prose blockquote {
-  margin-inline: 0;
-  padding-left: 1rem;
-  border-left: 3px solid var(--bordure);
-  color: var(--texte-doux);
+  margin: 32px 0;
+  padding: 4px 0 4px 22px;
+  border-left: 3px solid var(--rose);
 }
 
-.prose code {
-  font-family: var(--police-code);
-  font-size: 0.9em;
+.prose blockquote p {
+  font: italic 400 32px/1.15 var(--serif);
+  margin: 0 0 8px;
 }
 
 .prose :not(pre) > code {
+  font-family: var(--mono);
+  font-size: 0.85em;
   padding: 0.1em 0.3em;
-  border-radius: 0.25rem;
-  background: var(--fond-doux);
+  border-radius: 4px;
+  background: var(--code);
 }
 
 .prose pre {
+  margin: 0 0 24px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font: 400 14.5px/1.7 var(--mono);
   overflow-x: auto;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--bordure);
-  line-height: 1.5;
+  overflow-wrap: normal;
 }
 
 .prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 4px 0 28px;
+  font-size: 16px;
   display: block;
   overflow-x: auto;
-  border-collapse: collapse;
 }
 
-.prose th,
+.prose th {
+  text-align: left;
+  padding: 8px 12px 8px 0;
+  border-bottom: 2px solid var(--encre);
+  font-size: 11px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
 .prose td {
-  padding: 0.4rem 0.75rem;
-  border: 1px solid var(--bordure);
+  padding: 9px 12px 9px 0;
+  border-bottom: 1px solid var(--filet);
+}
+
+.prose img {
+  border-radius: 12px;
+}
+
+/* Revues */
+.titre-page i,
+.masthead i {
+  color: var(--bleu);
+}
+
+.lien-rss {
+  font-size: 15px;
+  color: var(--bleu);
+}
+
+.annee {
+  margin: 24px 0 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--filet);
+}
+
+.ligne-revue {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 12px;
+  padding: 10px 0;
+  align-items: baseline;
+}
+
+.ligne-revue .numero {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bleu);
+}
+
+.ligne-revue a {
+  font-size: 18px;
+  color: var(--bleu);
+}
+
+/* Revue : mise en page de lettre */
+.masthead {
+  text-align: center;
+  padding: 10px 0 18px;
+  border-bottom: 3px double var(--encre);
+}
+
+.masthead .retour {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--pale);
+  text-decoration: none;
+  margin-bottom: 8px;
+}
+
+.masthead .titre-revue {
+  font: 400 96px/0.9 var(--serif);
+  letter-spacing: -0.02em;
+}
+
+.masthead .infos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: space-between;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 14px;
+  color: var(--doux);
+}
+
+.titre-lettre {
+  font: 400 44px/1.05 var(--serif);
+  text-align: center;
+  margin: 32px 0 28px;
+  text-wrap: balance;
+}
+
+.lettre {
+  counter-reset: sujet;
+}
+
+.lettre h2 {
+  font: 400 30px/1.1 var(--serif);
+  margin: 30px 0 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--filet);
+}
+
+.lettre h2:not(#en-bref) {
+  counter-increment: sujet;
+}
+
+.lettre h2:not(#en-bref)::before {
+  content: counter(sujet, decimal-leading-zero);
+  display: block;
+  margin-bottom: 6px;
+  font: 400 11px var(--sans);
+  letter-spacing: 0.1em;
+  color: var(--bleu);
+}
+
+/* La ligne « *Source : …* » juste sous le titre d'un sujet */
+.lettre h2 + p:has(> em:only-child) {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bleu);
+  margin: -4px 0 8px;
+}
+
+.lettre h2 + p:has(> em:only-child) em {
+  font-style: normal;
+}
+
+.lettre h2#en-bref {
+  font: 400 11px var(--sans);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pale);
+  border-top: 3px double var(--encre);
+  padding-top: 14px;
+  margin-top: 36px;
+}
+
+.lettre p,
+.lettre li {
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+.lettre > p:first-child {
+  font-size: 19px;
+}
+
+/* « > **Mon avis :** … » */
+.lettre blockquote {
+  margin: 0 0 10px;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--bleu-fond);
+}
+
+.lettre blockquote p {
+  font: 400 17px/1.65 var(--sans);
+  margin: 0;
+}
+
+.lettre blockquote strong {
+  color: var(--bleu);
+}
+
+/* La signature : dernier paragraphe en italique */
+.lettre > p:last-child:has(> em:only-child) {
+  font: italic 400 28px var(--serif);
+  margin: 30px 0 0;
+}
+
+/* À propos */
+.contact {
+  font-size: 18px;
+  line-height: 1.9;
+}
+
+.contact span {
+  color: var(--pale);
+}
+
+/* Petits écrans (la maquette n'en a pas : adaptation) */
+@media (max-width: 640px) {
+  .page {
+    padding: 28px 16px 48px;
+  }
+
+  main {
+    padding-top: 28px;
+  }
+
+  .entete {
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .avatar {
+    width: 52px;
+    height: 52px;
+  }
+
+  .nom {
+    font-size: 26px;
+  }
+
+  .nav .nav-externe {
+    margin-left: 0;
+  }
+
+  .accroche {
+    font-size: 36px;
+  }
+
+  .titre-page,
+  .titre-article {
+    font-size: 40px;
+  }
+
+  .titre-projet {
+    font-size: 56px;
+  }
+
+  .masthead .titre-revue {
+    font-size: 64px;
+  }
+
+  .titre-lettre {
+    font-size: 32px;
+  }
+
+  .fiche {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .vignette {
+    height: 140px;
+  }
+
+  .fiche-meta {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .recent {
+    grid-template-columns: 18px 62px minmax(0, 1fr);
+    font-size: 16px;
+  }
+
+  .prose p,
+  .prose li {
+    font-size: 18px;
+  }
+
+  .prose blockquote p {
+    font-size: 26px;
+  }
 }

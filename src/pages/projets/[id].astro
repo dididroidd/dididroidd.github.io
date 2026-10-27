@@ -2,54 +2,113 @@
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
-import ListeArticles from '../../components/ListeArticles.astro';
+import EntreeJournal from '../../components/EntreeJournal.astro';
 import { byDateDesc, isPublished } from '../../lib/contenu';
+import { formatMois } from '../../lib/date';
+import { TYPES_JOURNAL } from '../../lib/journal-format';
+import { projetsPublies } from '../../lib/projets';
 import { STATUTS } from '../../lib/statut';
 import { url } from '../../lib/url';
 
 export async function getStaticPaths() {
-  const projets = await getCollection('projets', isPublished);
-  return projets.map((projet) => ({ params: { id: projet.id }, props: { projet } }));
+  const projets = await projetsPublies();
+  return projets.map((projet, i) => ({
+    params: { id: projet.id },
+    props: { projet, numero: String(i + 1).padStart(2, '0') },
+  }));
 }
 
 interface Props {
   projet: CollectionEntry<'projets'>;
+  numero: string;
 }
 
-const { projet } = Astro.props;
-const { titre, resume, statut, technos, liens, image } = projet.data;
+const { projet, numero } = Astro.props;
+const { titre, resume, statut, technos, liens, image, depuis } = projet.data;
 const { Content } = await render(projet);
 const entrees = (await getCollection('journal', (e) => isPublished(e) && e.data.projet.id === projet.id)).sort(
   byDateDesc,
 );
+
+// Entrées groupées par mois, du plus récent au plus ancien.
+const mois = new Map<string, CollectionEntry<'journal'>[]>();
+for (const e of entrees) {
+  const m = formatMois(e.data.date);
+  mois.set(m, [...(mois.get(m) ?? []), e]);
+}
+const s = STATUTS[statut];
 ---
 
-<Base titre={titre} description={resume}>
-  <article class="projet">
-    <header>
-      <p class:list={['statut', `statut--${statut}`]}>{STATUTS[statut]}</p>
-      <h1>{titre}</h1>
-      <p class="chapo">{resume}</p>
-      {technos.length > 0 && <p class="meta">{technos.join(' · ')}</p>}
-      {
-        liens && (
-          <p class="liens">
-            {liens.demo && <a href={liens.demo}>Démo</a>}
-            {liens.code && <a href={liens.code}>Code</a>}
-          </p>
-        )
-      }
-    </header>
-    {image && <Image src={image} alt="" />}
-    <div class="prose">
-      <Content />
+<Base titre={titre} description={resume} section="projets">
+  <div class="surtitre fil-ariane"><a href={url('/projets/')}>Projets</a> / {numero}</div>
+  <h1 class="titre-projet">{titre}</h1>
+  <p class="pitch">{resume}</p>
+  <div class="fiche-meta">
+    <div>
+      <div class="surtitre">Statut</div>
+      <span class:list={[`statut--${statut}`]} style="font-weight:600">{s.symbole} {s.label}</span>
     </div>
-  </article>
+    <div>
+      <div class="surtitre">Depuis</div>
+      {formatMois(depuis)}
+    </div>
+    {
+      liens && (liens.demo || liens.code) && (
+        <div>
+          <div class="surtitre">Liens</div>
+          <div class="liens">
+            {liens.demo && <a href={liens.demo}>Démo ↗</a>}
+            {liens.code && <a href={liens.code}>Code ↗</a>}
+          </div>
+        </div>
+      )
+    }
+    {
+      technos.length > 0 && (
+        <div class="technos">
+          {technos.map((t) => (
+            <span>#{t}</span>
+          ))}
+        </div>
+      )
+    }
+  </div>
+  {
+    image && (
+      <div class="capture">
+        <Image src={image} alt="" width={1344} />
+      </div>
+    )
+  }
+  <div class="prose">
+    <Content />
+  </div>
 
-  <section class="journal">
+  <div class="journal-tete">
     <h2>Journal de bord</h2>
-    <ListeArticles
-      articles={entrees.map((e) => ({ href: url(`/journal/${e.id}/`), titre: e.data.titre, date: e.data.date }))}
-    />
-  </section>
+    <span class="id-court">{entrees.length} {entrees.length > 1 ? 'entrées' : 'entrée'}</span>
+  </div>
+  <div class="legende">
+    {
+      Object.entries(TYPES_JOURNAL).map(([type, t]) => (
+        <span class={`t-${type}`}>
+          <b>{t.symbole}</b> #{t.tag}
+        </span>
+      ))
+    }
+  </div>
+  {
+    entrees.length === 0 ? (
+      <p class="vide">Pas encore d'entrée.</p>
+    ) : (
+      [...mois].map(([m, liste]) => (
+        <>
+          <div class="surtitre mois">{m}</div>
+          {liste.map((e) => (
+            <EntreeJournal entree={e} />
+          ))}
+        </>
+      ))
+    )
+  }
 </Base>

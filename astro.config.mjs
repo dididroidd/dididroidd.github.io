@@ -5,8 +5,7 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   site: 'https://dididroidd.github.io',
   markdown: {
-    shikiConfig: {
-      themes: { light: 'github-light', dark: 'github-dark' },
-    },
+    // Couleurs du code définies dans src/styles/global.css (--astro-code-*).
+    shikiConfig: { theme: 'css-variables' },
   },
 });
