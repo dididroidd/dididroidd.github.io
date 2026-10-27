@@ -1,16 +1,37 @@
 ---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import CarteProjet from '../components/CarteProjet.astro';
+import ListeArticles from '../components/ListeArticles.astro';
+import { byDateDesc, isPublished } from '../lib/contenu';
+import { url } from '../lib/url';
+
+const projets = (await getCollection('projets', isPublished)).sort((a, b) => a.data.ordre - b.data.ordre);
+const revues = (await getCollection('revues', isPublished)).sort(byDateDesc).slice(0, 3);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Base>
+  <section class="intro">
+    <h1>Salut, moi c'est Didi.</h1>
+    <p>
+      Développeur. Ici je montre les projets sur lesquels je travaille, comment ils avancent, et ce que je
+      retiens de l'actu tech. (Texte provisoire, à remplacer.)
+    </p>
+  </section>
+
+  <section>
+    <h2>Projets</h2>
+    <div class="grille-projets">
+      {projets.map((p) => <CarteProjet projet={p} />)}
+    </div>
+  </section>
+
+  <section class="secondaire">
+    <h2>Dernières revues tech</h2>
+    <ListeArticles
+      articles={revues.map((r) => ({ href: url(`/revues/${r.id}/`), titre: r.data.titre, date: r.data.date }))}
+      vide="Pas encore de revue."
+    />
+    <p><a href={url('/revues/')}>Toutes les revues →</a></p>
+  </section>
+</Base>

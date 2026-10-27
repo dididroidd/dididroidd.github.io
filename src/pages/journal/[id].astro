@@ -1,0 +1,34 @@
+---
+import { getCollection, getEntry, render, type CollectionEntry } from 'astro:content';
+import Article from '../../layouts/Article.astro';
+import { isPublished } from '../../lib/contenu';
+import { url } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const entrees = await getCollection('journal', isPublished);
+  return Promise.all(
+    entrees.map(async (entree) => {
+      const projet = await getEntry(entree.data.projet);
+      if (!projet) {
+        throw new Error(
+          `L'entrée de journal "${entree.id}" pointe vers le projet "${entree.data.projet.id}", qui n'existe pas dans src/content/projets/.`,
+        );
+      }
+      return { params: { id: entree.id }, props: { entree, projet } };
+    }),
+  );
+}
+
+interface Props {
+  entree: CollectionEntry<'journal'>;
+  projet: CollectionEntry<'projets'>;
+}
+
+const { entree, projet } = Astro.props;
+const { Content } = await render(entree);
+---
+
+<Article titre={entree.data.titre} date={entree.data.date} type="journal" projet={projet.data.titre}>
+  <Content />
+  <p slot="apres" class="retour"><a href={url(`/projets/${projet.id}/`)}>← {projet.data.titre}</a></p>
+</Article>

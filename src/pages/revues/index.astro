@@ -1,0 +1,23 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ListeArticles from '../../components/ListeArticles.astro';
+import { byDateDesc, isPublished } from '../../lib/contenu';
+import { url } from '../../lib/url';
+
+const revues = (await getCollection('revues', isPublished)).sort(byDateDesc);
+---
+
+<Base titre="Revue tech">
+  <h1>Revue tech</h1>
+  <p class="chapo">Chaque semaine, ce qui s'est passé dans la tech et ce que j'en pense.</p>
+  <ListeArticles
+    articles={revues.map((r) => ({
+      href: url(`/revues/${r.id}/`),
+      titre: r.data.titre,
+      date: r.data.date,
+      resume: r.data.resume,
+    }))}
+    vide="Pas encore de revue."
+  />
+</Base>

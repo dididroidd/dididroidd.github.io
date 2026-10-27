@@ -1,0 +1,30 @@
+---
+import Base from './Base.astro';
+import { formatDate } from '../lib/date';
+
+interface Props {
+  titre: string;
+  date: Date;
+  type: 'journal' | 'revue';
+  /** Nom du projet, pour une entrée de journal. */
+  projet?: string;
+  description?: string;
+}
+
+const { titre, date, type, projet, description } = Astro.props;
+const badge = type === 'journal' ? `Journal · ${projet}` : 'Revue tech';
+---
+
+<Base titre={titre} description={description}>
+  <article class:list={['article', `article--${type}`]}>
+    <header>
+      <p class:list={['badge', `badge--${type}`]}>{badge}</p>
+      <h1>{titre}</h1>
+      <p class="meta"><time datetime={date.toISOString().slice(0, 10)}>{formatDate(date)}</time></p>
+    </header>
+    <div class="prose">
+      <slot />
+    </div>
+    <slot name="apres" />
+  </article>
+</Base>

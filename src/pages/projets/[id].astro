@@ -1,0 +1,55 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import ListeArticles from '../../components/ListeArticles.astro';
+import { byDateDesc, isPublished } from '../../lib/contenu';
+import { STATUTS } from '../../lib/statut';
+import { url } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const projets = await getCollection('projets', isPublished);
+  return projets.map((projet) => ({ params: { id: projet.id }, props: { projet } }));
+}
+
+interface Props {
+  projet: CollectionEntry<'projets'>;
+}
+
+const { projet } = Astro.props;
+const { titre, resume, statut, technos, liens, image } = projet.data;
+const { Content } = await render(projet);
+const entrees = (await getCollection('journal', (e) => isPublished(e) && e.data.projet.id === projet.id)).sort(
+  byDateDesc,
+);
+---
+
+<Base titre={titre} description={resume}>
+  <article class="projet">
+    <header>
+      <p class:list={['statut', `statut--${statut}`]}>{STATUTS[statut]}</p>
+      <h1>{titre}</h1>
+      <p class="chapo">{resume}</p>
+      {technos.length > 0 && <p class="meta">{technos.join(' · ')}</p>}
+      {
+        liens && (
+          <p class="liens">
+            {liens.demo && <a href={liens.demo}>Démo</a>}
+            {liens.code && <a href={liens.code}>Code</a>}
+          </p>
+        )
+      }
+    </header>
+    {image && <Image src={image} alt="" />}
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+
+  <section class="journal">
+    <h2>Journal de bord</h2>
+    <ListeArticles
+      articles={entrees.map((e) => ({ href: url(`/journal/${e.id}/`), titre: e.data.titre, date: e.data.date }))}
+    />
+  </section>
+</Base>

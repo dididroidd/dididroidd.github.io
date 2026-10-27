@@ -1,0 +1,294 @@
+/* Thème minimal : ces variables seront remplacées par la direction visuelle 3a. */
+:root {
+  color-scheme: light dark;
+  --fond: #fdfdfc;
+  --fond-doux: #f2f1ee;
+  --texte: #1d1d1b;
+  --texte-doux: #66645e;
+  --bordure: #dedcd6;
+  --accent: #2f5bd3;
+  --accent-journal: #b4581a;
+  --accent-revue: #2f5bd3;
+  --mesure: 68ch;
+  --police: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --police-code: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fond: #151514;
+    --fond-doux: #1f1f1d;
+    --texte: #e8e6e1;
+    --texte-doux: #a09d95;
+    --bordure: #34332f;
+    --accent: #7d9cf0;
+    --accent-journal: #e8935a;
+    --accent-revue: #7d9cf0;
+  }
+
+  .astro-code,
+  .astro-code span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--fond);
+  color: var(--texte);
+  font-family: var(--police);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+main,
+.entete,
+.pied {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+main {
+  padding-block: 2rem 4rem;
+}
+
+a {
+  color: var(--accent);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.25;
+}
+
+/* En-tête et pied */
+.entete {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-block: 1.25rem;
+  border-bottom: 1px solid var(--bordure);
+}
+
+.entete nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.entete a {
+  color: var(--texte);
+  text-decoration: none;
+}
+
+.logo {
+  font-weight: 700;
+}
+
+.pied {
+  padding-block: 2rem;
+  color: var(--texte-doux);
+  font-size: 0.875rem;
+  border-top: 1px solid var(--bordure);
+}
+
+/* Accueil */
+.intro {
+  max-width: var(--mesure);
+  margin-bottom: 3rem;
+}
+
+.intro h1 {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+}
+
+.secondaire {
+  margin-top: 3rem;
+  font-size: 0.95rem;
+}
+
+.secondaire h2 {
+  font-size: 1.15rem;
+}
+
+/* Projets */
+.grille-projets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 1rem;
+}
+
+.carte-projet {
+  display: block;
+  padding: 1.25rem;
+  border: 1px solid var(--bordure);
+  border-radius: 0.5rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.carte-projet:hover {
+  border-color: var(--accent);
+}
+
+.carte-projet h3 {
+  margin: 0 0 0.5rem;
+}
+
+.carte-projet p {
+  margin: 0 0 0.5rem;
+}
+
+.statut {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent-journal);
+}
+
+.chapo {
+  font-size: 1.15rem;
+  color: var(--texte-doux);
+  max-width: var(--mesure);
+}
+
+.meta {
+  color: var(--texte-doux);
+  font-size: 0.875rem;
+}
+
+.liens {
+  display: flex;
+  gap: 1rem;
+}
+
+.journal {
+  max-width: var(--mesure);
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--bordure);
+}
+
+/* Listes d'articles */
+.liste-articles {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.liste-articles li {
+  padding-block: 0.75rem;
+  border-bottom: 1px solid var(--bordure);
+}
+
+.liste-articles time {
+  display: block;
+  color: var(--texte-doux);
+  font-size: 0.85rem;
+}
+
+.liste-articles p {
+  margin: 0.25rem 0 0;
+  color: var(--texte-doux);
+}
+
+.vide {
+  color: var(--texte-doux);
+  font-style: italic;
+}
+
+/* Articles */
+.article,
+.projet {
+  max-width: var(--mesure);
+}
+
+.badge {
+  display: inline-block;
+  margin: 0;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--fond);
+}
+
+.badge--journal {
+  background: var(--accent-journal);
+}
+
+.badge--revue {
+  background: var(--accent-revue);
+}
+
+.article h1 {
+  margin-block: 0.5rem 0.25rem;
+}
+
+.retour {
+  margin-top: 3rem;
+}
+
+/* Contenu Markdown */
+.prose {
+  max-width: var(--mesure);
+  overflow-wrap: break-word;
+}
+
+.prose blockquote {
+  margin-inline: 0;
+  padding-left: 1rem;
+  border-left: 3px solid var(--bordure);
+  color: var(--texte-doux);
+}
+
+.prose code {
+  font-family: var(--police-code);
+  font-size: 0.9em;
+}
+
+.prose :not(pre) > code {
+  padding: 0.1em 0.3em;
+  border-radius: 0.25rem;
+  background: var(--fond-doux);
+}
+
+.prose pre {
+  overflow-x: auto;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--bordure);
+  line-height: 1.5;
+}
+
+.prose table {
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+.prose th,
+.prose td {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--bordure);
+}

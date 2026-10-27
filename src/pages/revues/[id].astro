@@ -1,0 +1,23 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Article from '../../layouts/Article.astro';
+import { isPublished } from '../../lib/contenu';
+import { url } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const revues = await getCollection('revues', isPublished);
+  return revues.map((revue) => ({ params: { id: revue.id }, props: { revue } }));
+}
+
+interface Props {
+  revue: CollectionEntry<'revues'>;
+}
+
+const { revue } = Astro.props;
+const { Content } = await render(revue);
+---
+
+<Article titre={revue.data.titre} date={revue.data.date} type="revue" description={revue.data.resume}>
+  <Content />
+  <p slot="apres" class="retour"><a href={url('/revues/')}>← Toutes les revues</a></p>
+</Article>

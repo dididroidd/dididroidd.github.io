@@ -1,0 +1,40 @@
+---
+import '../styles/global.css';
+import { url } from '../lib/url';
+
+interface Props {
+  titre?: string;
+  description?: string;
+}
+
+const NOM_SITE = 'Didi';
+const { titre, description = 'Mes projets, mon journal de bord et une revue tech hebdomadaire.' } = Astro.props;
+const titreComplet = titre ? `${titre} · ${NOM_SITE}` : NOM_SITE;
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
+    <title>{titreComplet}</title>
+  </head>
+  <body>
+    <header class="entete">
+      <a class="logo" href={url('/')}>{NOM_SITE}</a>
+      <nav>
+        <a href={url('/projets/')}>Projets</a>
+        <a href={url('/revues/')}>Revue tech</a>
+        <a href={url('/a-propos/')}>À propos</a>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="pied">
+      <p>{NOM_SITE} · {new Date().getFullYear()}</p>
+    </footer>
+  </body>
+</html>
