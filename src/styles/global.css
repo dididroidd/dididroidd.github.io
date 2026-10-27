@@ -999,4 +999,15 @@ main {
   .prose blockquote p {
     font-size: 26px;
   }
+
+  /* La lettre garde ses tailles (sinon écrasées par les deux règles ci-dessus). */
+  .lettre p,
+  .lettre li,
+  .lettre blockquote p {
+    font-size: 17px;
+  }
+
+  .lettre > p:last-child:has(> em:only-child) {
+    font-size: 28px;
+  }
 }

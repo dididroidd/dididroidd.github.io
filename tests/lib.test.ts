@@ -48,3 +48,11 @@ test('formats de date', () => {
   expect(formatDateLongue(d)).toBe('lundi 26 octobre 2026');
   expect(formatMois(d)).toBe('octobre 2026');
 });
+
+test('byDateDesc départage les dates égales par id décroissant', () => {
+  const e = (id: string) => ({ id, data: { date: new Date('2026-10-28') } });
+  expect([e('2026-10-28-a'), e('2026-10-28-b')].sort(byDateDesc).map((x) => x.id)).toEqual([
+    '2026-10-28-b',
+    '2026-10-28-a',
+  ]);
+});

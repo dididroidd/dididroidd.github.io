@@ -10,11 +10,12 @@ import { url } from '../../lib/url';
 export async function getStaticPaths() {
   const journal = await journalPublie();
   return journal.map(({ entree, projet }) => {
-    // L'entrée précédente du même projet (la plus récente parmi les plus anciennes).
-    const precedente = journal
-      .filter((j) => j.projet.id === projet.id && j.entree.data.date < entree.data.date)
+    // L'entrée précédente du même projet : la suivante dans l'ordre du fil (plus récent d'abord).
+    const fil = journal
+      .filter((j) => j.projet.id === projet.id)
       .map((j) => j.entree)
-      .sort(byDateDesc)[0];
+      .sort(byDateDesc);
+    const precedente = fil[fil.findIndex((e) => e.id === entree.id) + 1];
     return { params: { id: entree.id }, props: { entree, projet, precedente } };
   });
 }

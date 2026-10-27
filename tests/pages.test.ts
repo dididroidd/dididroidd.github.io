@@ -149,6 +149,21 @@ describe('pages', () => {
     );
   }, 120_000);
 
+  test('entrées du même jour : chaînées par nom de fichier', () => {
+    buildWith(
+      {
+        'src/content/journal/2026-10-28-a.md': '---\ntitre: Matin\ndate: 2026-10-28\nprojet: app-recueil\ntype: idee\n---\nx\n',
+        'src/content/journal/2026-10-28-b.md': '---\ntitre: Soir\ndate: 2026-10-28\nprojet: app-recueil\ntype: idee\n---\nx\n',
+      },
+      () => {
+        expect(read('journal/2026-10-28-b/index.html')).toContain('href="/journal/2026-10-28-a/"');
+        expect(read('journal/2026-10-28-a/index.html')).toContain('href="/journal/2026-10-26-demarrage/"');
+        const projet = read('projets/app-recueil/index.html');
+        expect(projet.indexOf('Soir')).toBeLessThan(projet.indexOf('Matin'));
+      },
+    );
+  }, 120_000);
+
   test('projet sans journal', () => {
     buildWith(
       {
